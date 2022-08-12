@@ -1,0 +1,8 @@
+snippet apply
+df[${1:fieldname}] = df.apply(lambda row: ${2:row[0] ** 2},  axis=1)
+$0
+endsnippet
+
+snippet groupby "Group By - Ausgabe normaler Dataframe, keine Indexspalten (ansonsten kommt ne Series raus)"
+df.groupby(fields_array, as_index=False)
+endsnippet

@@ -1,0 +1,85 @@
+snippet report "Mako Template"
+## -*- coding: utf-8 -*-
+<!DOCTYPE html>
+<html>
+<head>
+		<style type="text/css">
+				\${css}
+ </style>
+</head>
+<body>
+ 
+		%for o in objects :
+		<%
+		import pooler
+		users = pooler.get_pool(cr.dbname).get("res.users")
+		lang = users.browse(cr, 1, uid, context=context).context_lang
+		setLang(lang)
+		%>
+        ${o.field}
+		<p style="page-break-after:always"></p>
+		%endfor
+ 
+</body>
+</html>        
+endsnippet
+
+snippet live "live is deprecated, use on on document instead"
+$(document).on('${1:event}', ${2:selector}, ${3:args}, function() {
+
+});
+endsnippet
+
+
+
+snippet barcode "Barcode Lines as b64 to embedd in webkit/html"
+def barcode(content):
+    import barcode
+    from StringIO import StringIO
+    from barcode.writer import ImageWriter
+    code = barcode.Code39(${1:content}, writer=ImageWriter(), add_checksum=False)
+	 io = StringIO()
+    code.write(io, {'write_text': ${2:False}})
+    io.seek(0)
+    import base64
+    code = base64.b64encode(io.read())
+    return "data:image/png;base64,{code}".format(code=code)
+$0
+
+endsnippet
+
+snippet barcode "Barcode Datamatrix as b64 to embedd in webkit/html"
+<%
+def barcode(content):
+    import base64
+    from hubarcode.datamatrix import DataMatrixEncoder
+    encoder = DataMatrixEncoder(content)
+    code = encoder.get_imagedata()
+    code = base64.b64encode(code)
+    return "data:image/png;base64,{code}".format(code=code)
+%>
+endsnippet
+
+snippet barcode "QRCode"
+<%
+def barcode(content):
+    import base64
+    import qrcode
+    from cStringIO import StringIO
+    stream = StringIO()
+    img = qrcode.make(content)
+    img.save(stream)
+    stream.seek(0)
+    b64 = base64.b64encode(stream.read())
+    return "data:image/png;base64,{code}".format(code=b64)
+%>
+endsnippet
+
+snippet img "Inline image base 64 encoded data"
+<img src='data:image/png;base64,${barcode}' />
+endsnippet
+
+snippet logo
+${{helper.embed_logo_by_name('${1:logo}', width='120px')|n}}
+$0
+endsnippet

@@ -1,0 +1,122 @@
+snippet po "ir.ui.view (not static) approved in V13"
+#. module: ${1:module}
+#: model_terms:ir.ui.view,arch_db:$1.$2
+msgid ""
+msgstr ""
+endsnippet
+
+snippet po "static xml file qweb"
+Achtung: benoetigt patch; Problem: Modul wird nicht
+in ir.translation geschrieben; andererseits beim import ausgefiltert,
+wenn keine res_id aber modul angegeben wird. Wohl nur bei Modulinstallation setzbar
+aber unpraktisch beim entwickeln.
+
+So wird bei request web/webclient/translations die Werte zurueckgegeben und sind 
+per javascript zur Verfuegung
+
+#. module: ${1:module}
+#. openerp-web
+#: code:${2:path_to_file}:0
+#, python-format
+msgid "In Englisch"
+msgstr "In Deutsch"
+endsnippet
+
+snippet po "header"
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* helpdesk_complaints
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-11 22:13+0000\n"
+"PO-Revision-Date: 2020-11-11 22:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+endsnippet
+
+
+snippet po "report"
+#. module: ${1:module}
+#: report:${2:report_name_without_report.}:0
+msgid "${3:src}"
+msgstr "${4:value}"
+endsnippet
+
+snippet po "report"
+#: report:addons/${2:module_name}/reports/${3:filename}:${4:line}
+msgid "${5:src}"
+msgstr "${6:value}"
+endsnippet
+
+snippet po "field label (works in 11!)"
+#. module: ${1:module}
+#: model:ir.model.fields,field_description:product.field_product_product__default_code
+msgid "${4:src}"
+msgstr "${5:value}"
+endsnippet
+
+snippet po "selection"
+#. module: ${1:module}
+#: selection:${2:model.dot},${3:state}:0
+msgid "${4:term}"
+msgstr "$0"
+endsnippet
+
+snippet po "menuitem"
+#. module: ${1:module}
+#: model:ir.ui.menu,name:${2:full_xml_id}
+msgid "${4:term}"
+msgstr "$0"
+endsnippet
+
+snippet po "char field translated"
+#. module: ${1:module}
+#: model:${2:product.product},${3:name}:${4:full_xml_id}
+msgid "${5:term}"
+msgstr "$0"
+endsnippet
+
+snippet po "Any value of a record"
+#. module: ${1:module}
+#: model:${2:model},${3:field_name}:${4:full_xml_id}
+msgid "${5:term}"
+msgstr "$0"
+endsnippet
+
+
+snippet uml_a
+ä
+endsnippet
+
+snippet uml_A
+Ä
+endsnippet
+
+snippet uml_u
+ü
+endsnippet
+
+snippet uml_U
+Ü
+endsnippet
+
+snippet uml_o
+ö
+endsnippet
+
+snippet uml_O
+Ö
+endsnippet
+
+snippet po "code"
+#: code:addons/${1:module}:0
+#: code:addons/${1:module}/${2:path_to_file}.py:0
+endsnippet
+

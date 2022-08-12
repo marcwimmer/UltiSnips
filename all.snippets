@@ -1,0 +1,30 @@
+snippet country
+"id","country_id:id","name","code"
+state_us_1,us,"Alabama","AL"
+endsnippet
+
+snippet sec_security_with_header
+${3:model_id:id,group_id:id,id,name,perm_read,perm_write,perm_create,perm_unlink}
+model_${1/\./_/g},${2:group_id},access_${1/\./_/g}_${2/\./_/g},n/a,${4:1,0,0,0}
+$0
+endsnippet
+
+snippet sec_security_line
+model_${1/\./_/g},${2:group_id or empty},${1/\./_/g}_${2/\./_/g},n/a,${4:1,0,0,0}
+$0
+endsnippet
+
+snippet sec_securty_reader_user_manager
+${4:module}model_${1/\./_/g},${2:group_id or empty}_manager,access_${1/\./_/g}_${2/\./_/g}_manager,n/a,1,1,1,1
+$4model_${1/\./_/g},$2_user,access_${4/\./_/g}_${2/\./_/g}_user,n/a,1,1,1,0
+$4model_${1/\./_/g},$2_reader,access_${4/\./_/g}_${2/\./_/g}_${1/\./_/g}${2/\./_/g}_reader,n/a,1,0,0,0
+$0
+endsnippet
+
+snippet translate_mobile_head
+src,module,name,lang,type,value,id
+endsnippet
+
+snippet translate_mobile
+${1:term},${2:module},"$2,$1",de_DE,code,"${3:value}",'translation_$1'
+endsnippet

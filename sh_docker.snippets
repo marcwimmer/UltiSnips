@@ -1,0 +1,20 @@
+snippet waiting
+
+echo "Waiting for asterisk to arrive at port $PORT_ASTERISK"
+while true; do
+    if $(nc -z $HOST_ASTERISK $PORT_ASTERISK); then
+        break
+    fi
+    sleep 1
+done
+echo "Asterisk arrived! connecting..."
+endsnippet
+
+snippet postgres
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    CREATE USER docker;
+    CREATE DATABASE docker;
+    GRANT ALL PRIVILEGES ON DATABASE docker TO docker;
+EOSQL
+endsnippet

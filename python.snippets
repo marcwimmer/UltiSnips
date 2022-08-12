@@ -1,0 +1,2338 @@
+snippet simple_start
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+driver = webdriver.Firefox()
+driver.get("http://www.python.org")
+assert "Python" in driver.title
+elem = driver.find_element_by_name("q")
+elem.clear()
+elem.send_keys("pycon")
+elem.send_keys(Keys.RETURN)
+assert "No results found." not in driver.page_source
+driver.close()
+endsnippet
+
+snippet cpbefore_finalize
+@cherrypy.tools.register('before_finalize', priority=60)
+def secureheaders():
+	headers = cherrypy.response.headers
+	headers['X-Frame-Options'] = 'DENY'
+	headers['X-XSS-Protection'] = '1; mode=block'
+endsnippet
+
+
+snippet pylint-broad-exception
+# pylint: disable=broad-except
+endsnippet
+
+snippet pylint-protected-access
+# pylint: disable=protected-access
+endsnippet
+snippet apply
+df[${1:fieldname}] = df.apply(lambda row: ${2:row[0] ** 2},  axis=1)
+$0
+endsnippet
+
+snippet groupby "Group By - Ausgabe normaler Dataframe, keine Indexspalten (ansonsten kommt ne Series raus)"
+df.groupby(fields_array, as_index=False)
+endsnippet
+
+snippet import_connector_dict
+from odoo.addons.connector_common import CIOrderedDict
+endsnippet
+extends python
+
+snippet unittest "V11"
+import arrow
+import os
+import pprint
+import logging
+import time
+import uuid
+from datetime import datetime, timedelta
+from unittest import skipIf
+from odoo import api
+from odoo import fields
+from odoo.tests.common import TransactionCase, Form
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo.exceptions import UserError, RedirectWarning, ValidationError, AccessError
+
+
+class $1(TransactionCase):
+
+	def setUp(self):
+		super().setUp()
+
+    @skipIf(os.getenv("ODOO_TESTS", "0") == "0", "")
+    def test_$2(self):
+        """ $3  """
+        env = api.Environment(self.env.cr, self.capa_manager_marketing.id, {})
+        self.assertTrue(latest_line.after_confirmed)
+endsnippet
+
+snippet translate_/sel
+state_description_values = {elem[0]: elem[1] for elem in self._fields[${1:field_name}]._description_selection(self.env)}
+# dict(self.fields_get([${1:field}])[$1]['selection']).get(${2:value}, ${3:default_value})
+endsnippet
+
+snippet DATETIME
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+endsnippet
+
+snippet imp_
+from tools.translate import _
+endsnippet
+
+snippet spg
+self.pool["$1"]$0
+endsnippet
+
+snippet model_id_get "V8"
+env.ref('....')
+${1:self.env['ir.model.data'].xmlid_to_res_id('$2')}
+${3:self.env['ir.model.data'].xmlid_to_object('$4')}
+endsnippet
+
+snippet utf8
+# -*- coding: utf-8 -*-
+endsnippet
+
+snippet date2str
+$1.strftime("%Y-%m-%d %H:%M:%S")
+endsnippet
+
+snippet now "now as datetime NOT string"
+now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+endsnippet
+
+snippet now "Fields.Datetime.now()"
+fields.Datetime.now()
+endsnippet
+
+snippet today
+fields.Date.today()
+endsnippet
+
+snippet str2date "fields.DateTime"
+fields.Datetime.from_string($1)
+endsnippet
+
+snippet str2date "fields.Date"
+fields.Date.from_string($1)
+endsnippet
+
+snippet str2date "strptime"
+datetime.strptime($1, "%Y-%m-%d %H:%M:%S")
+endsnippet
+
+snippet st
+breakpoint()
+endsnippet
+
+snippet traceback
+import traceback
+msg = traceback.format_exc()
+endsnippet
+
+snippet lgdebug
+logger.debug("$0")
+endsnippet
+
+snippet lgerror
+logger.error("$0")
+endsnippet
+
+snippet dbname_from_thread
+db_name = getattr(threading.currentThread(), 'dbname', None)
+endsnippet
+
+snippet crud "V11"
+def create(self, vals):
+	result = super().create(vals)
+	return result
+
+def write(self, vals):
+	result = super().write(vals)
+	return result
+
+def unlink(self):
+	result = super().unlink()
+	return result
+endsnippet
+
+snippet fvg "V13 Fields View Get"
+@api.model
+def _fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+	result = super(BaseNextActivity, self)._fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+	if view_type == 'form':
+		doc = etree.XML(result['arch'])
+		node = doc.xpath("//group[@name='next_activity_group']")
+		if node:
+			node = node[0]
+			xml = """
+			  <group col="2" string="Next Activitiy">
+				<field name="next_activity_id"/>
+				<field name="title_action"/>
+				<field name="date_action"/>
+				<div attrs="{'invisible': [('next_activity_id', '=', False)]}">
+				  <button name="log_next_activity_done" string="Done" type="object" class="btn-link oe_read_only" attrs="{'invisible': [('next_activity_id', '=', False)]}"/>
+				  <button name="cancel_next_activity" string="Cancel" type="object" class="btn-link oe-oe_read_only" attrs="{'invisible': [('next_activity_id', '=', False)]}"/>
+				</div>
+			  </group>
+			"""
+			node.tag = 'group'
+			node.attrib['string'] = 'Next Activity'
+			for n in etree.XML(xml).xpath("*"):
+				node.append(n)
+
+			result['arch'], new_fields = self.env['ir.ui.view'].postprocess_and_fields(self._name, doc, view_id)
+
+			# nur neue Felder uebernehmen; ansonsten gehen definierte unter views verloren (werden von form nach fields ausgelagert)
+			for k, v in new_fields.items():
+				if k not in result['fields']:
+					result['fields'][k] = v
+	return result
+endsnippet
+
+snippet Fields "selection add"
+fields.Selection(selection_add=[('$1', '$2')])
+endsnippet
+
+snippet Fields "selection group_expand"
+fields.Selection(group_expand="_expand_states")
+def _expand_states(self, states, domain, order):
+	# return all possible states, in order
+	return [key for key, val in type(self).state.selection]
+endsnippet
+
+snippet Fields "compute"
+@api.depends('sender')
+@api.one
+def ${1:name}(self):
+	self.${2:fieldname} = ${0}
+endsnippet
+
+snippet Fields "search"
+def ${1:name}(self, operator, value):
+	${0}
+	found_ids = []
+	return [domain]
+endsnippet
+
+snippet Fields "inverse"
+${2:@api.depends("${3:name}")}
+@api.one
+def ${1:name}(self):
+endsnippet
+
+snippet "fields.function: selection"
+'${1:name}': fields.function(${2:method}, type='selection', selection=${3:array}, method=True, string="${4:name}", translate=True),
+endsnippet
+
+snippet df "Block"
+_defaults = {
+	$1
+}
+endsnippet
+
+snippet df "current date"
+default=fields.Date.context_today
+endsnippet
+
+snippet sqlc_block "Block"
+_sql_constraints = [
+	$1
+]
+endsnippet
+
+snippet constraints "Constraints V9"
+@api.multi
+def $1(self):
+	for rec in self:
+		$0
+	return True
+
+_constraints = [
+	(${1:name}, '${2:error-message}', [${3:fields}]),
+]
+endsnippet
+Gjjjjjjjj
+snippet sqlc_check "CHECK for value"
+('${1:field_name}_value', "CHECK( ($1='value' and $1 is not null) or (2=2))", _("Please select %S") % '${2:field_title}'"),
+endsnippet
+
+snippet sqlc_unique "UNIQUE single field"
+('${1:field_name}_unique', "unique($1)", _("Only one unique entry allowed.")),
+endsnippet
+
+snippet sqlc_unique "UNIQUE field-combination"
+('${1:field_name}_${2:field_name2}_unique', "unique($1, $2)", _("Only one unique entry allowed.")),
+endsnippet
+
+snippet constraints "Block"
+_constraints = [
+	$0
+]
+endsnippet
+
+snippet window_close "Close Window"
+{'type': 'ir.actions.act_window_close'}
+endsnippet
+
+snippet open_window "Open Window with options as comments"
+return {
+	'view_type': 'form',
+	'res_model': self._name,
+	#'res_id': ,
+	#'domain': [],
+	#'views': [(obj.get_formview_id(), 'form'), (False, 'tree')],
+	#'views': [(False, 'tree'), (False, 'form')],
+	'type': 'ir.actions.act_window',
+	'flags': {'form': {
+		'action_buttons': True,  // to work in odoo 11 insert empty <footer /> in form (tested 18.05.2018)
+		#'initial_mode': 'edit'/'view'
+		#'footer_to_buttons': False,
+		#'not_interactiable_on_create': False,
+		#'disable_autofocus': False,
+		#'headless': False,  9.0 and others?
+	}},
+	'options': {
+		# needs module web_extended_actions
+		'hide_breadcrumb': True,
+		'replace_breadcrumb': True,
+		'clear_breadcrumbs': True,
+	},
+	'target': '${7:current}',
+}
+endsnippet
+
+snippet report_open_programmatically
+result_binary, format = self.env.ref("$1").render(${2:instance or instance.ids}, data={})
+endsnippet
+
+snippet report_as_action
+return self.env.ref("$1").report_action(${2:instances or instance.ids})
+endsnippet
+
+snippet closewindow "Code close window"
+return {'type': 'ir.actions.act_window_close'}
+endsnippet
+
+snippet xmlrpc "Script to Access odoo via xmlrpc"
+import inspect
+import os
+import time
+import xmlrpc.client
+import subprocess
+import sys
+
+host = "http://localhost:8069"
+username = "admin"
+pwd = "admin"
+db = "admin"
+
+def login(username, password):
+	socket_obj = xmlrpc.client.ServerProxy(f'{host}/xmlrpc/common')
+	uid = socket_obj.login(db, username, password)
+	return uid
+
+def exe(*params):
+	global uid
+	socket_obj = xmlrpc.client.ServerProxy(f'{host}/xmlrpc/object')
+	return socket_obj.execute(db, uid, pwd, *params)
+
+uid = login(username, pwd)
+values = exe("res.partner", "read", [100], ["name"])
+endsnippet
+
+
+snippet controller
+from odoo import http
+from odoo.http import request
+
+class $1(http.Controller):
+
+    @http.route('${2:/some_url}', auth='${3:public}${4:user}', ${5:type="json"})
+    def handler(self, **post):
+        return stuff()
+
+endsnippet
+
+snippet fb "Fields Bool"
+'$1': fields.boolean('${2:string}'),
+endsnippet
+
+snippet fB "Fields Bool"
+$1 = fields.Boolean('${1:string}')
+endsnippet
+
+snippet fc "Fields Character"
+'$1': fields.char('${2:string}', size=${3:128}),
+endsnippet
+
+snippet fC "Fields Character"
+$1 = fields.Char('${2:string}')
+endsnippet
+
+snippet fF "Fields Float"
+'$1' =  fields.Float('${2:string}', digits=(16, 4))
+endsnippet
+
+snippet fi "Fields Integer"
+'${1}': fields.integer('${2:string}'),
+endsnippet
+
+snippet fS "Fields Selection"
+${1} = fields.Selection([('${2:v1}', '${3:v2}'), ], '${4:string}')
+endsnippet
+
+snippet stup "String Tuple"
+('${1:v1}', '${2:v2}')
+endsnippet
+
+
+snippet fdt "Fields DateTime"
+'${1}': fields.datetime('${2:string}'),
+endsnippet
+
+snippet fd "Fields Date"
+'${1}': fields.date('${2:string}'),
+endsnippet
+
+snippet ft "Fields Text"
+'${1}': fields.text('${2:string}'),
+endsnippet
+
+snippet fM2m "Fields many2many"
+${1}_ids = fields.Many2many('${2:model}', string='${3}')
+endsnippet
+
+snippet fm2m "Fields many2many"
+'${1}_ids': fields.many2many('${2:model}', string='${3}'),
+endsnippet
+
+snippet fo2m "Fields one2many"
+'${1}_ids': fields.one2many('${2:model}', '${3}_id',  string='${4}'),
+endsnippet
+
+snippet fO2m "Fields one2many"
+${1}_ids = fields.One2many('${2:model}', '${3}_id',  string='${4}')
+endsnippet
+
+snippet fm2o "Fields many2one"
+'${1}_id': fields.many2one('${2:model}', string='${3}'),
+endsnippet
+
+snippet fM2o "Fields many2one"
+${1}_id = fields.Many2one('${2:model}', string='${3}', ondelete="${4:set null}${5:cascade}${6:restrict}")
+endsnippet
+
+snippet fBinary "Field binary"
+${1:name} = fields.Binary("${2:string}")
+${1}_filename = fields.Char("${2} (fn)")
+endsnippet
+
+snippet fr "Fields Reference"
+'${1}': fields.reference(string='${2}', selection = [(${3},${4}), (${5}, ${6})], size=128),
+endsnippet
+
+snippet fstate "Fields state"
+'state': fields.selection([
+			('draft', 'Draft'),
+			('done', 'Done'),
+		], string='State'),
+endsnippet
+
+snippet ALL
+import os
+import glob
+__all__ = sorted([os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__) + "/*.py")])
+endsnippet
+
+snippet timezone
+#from outlookstormer version 7.0
+def convert_user_to_utc(self, date, context):
+	if not date:
+		return False
+	if isinstance(date, (str, unicode)):
+		date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+	utc = pytz.timezone('UTC')
+	context_tz = pytz.timezone(context['tz'])
+	tz_timestamp = context_tz.localize(date, is_dst=True)
+	date = tz_timestamp.astimezone(utc)
+	return date
+
+def convert_utc_to_user(self, date, context):
+	if not date:
+		return False
+	if isinstance(date, (str, unicode)):
+		date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+	utc = pytz.timezone('UTC')
+	context_tz = pytz.timezone(context['tz'])
+	utc_timestamp = utc.localize(date, is_dst=False)  # UTC = no DST
+	return utc_timestamp.astimezone(context_tz)
+endsnippet
+
+snippet pretty
+import pprint
+pp = pprint.PrettyPrinter()
+pp.pprint(SETS)
+endsnippet
+
+snippet seq "by xmlid"
+self.env.['$1'].next_by_id()
+endsnippet
+
+snippet seq "by xmlid v9"
+seq = self.env['ir.model.data'].xmlid_to_object("mail_report_wall.documentseq").next_by_id()
+endsnippet
+
+snippet seq "by code"
+self.pool['ir.sequence'].next_by_code(cr, 1, ${1:code}, {})
+endsnippet
+
+snippet '
+'${1}'$0
+endsnippet
+
+snippet {
+{'${1}': $0 }
+
+endsnippet
+
+snippet name_search
+@api.model
+def name_search(self, name='', args=None, operator='ilike', limit=100):
+    result = super($1, self).name_search(name=name, args=args, operator=operator, limit=limit)
+	return result
+endsnippet
+
+snippet name_get
+@api.multi
+def name_get(self):
+	res = super($1, self).name_get()
+	return res
+endsnippet
+
+snippet default_get "V11"
+@api.model
+def default_get(self, fields):
+	res = super($1, self).default_get(fields)
+	return res
+endsnippet
+
+snippet track "track_visibility"
+track_visibility="${1:onchange}${2:always}"
+endsnippet
+
+snippet _track
+@api.multi
+def _track_subtype(self, init_values):
+	if self.project_id and any(x.code == "CM" for x in self.project_id.infogroup_ids):
+		if 'stage_id' in init_values:
+			if self.stage_id.state == 'archiving':
+				return 'heine_capa.subtype_archiving'
+			if self.stage_id.state == 'done':
+				return 'heine_capa.subtype_done'
+			return 'heine_capa.subtype_state_changes'
+	return super(Task, self)._track_subtype(init_values)
+endsnippet
+
+snippet m2m
+
++ For a many2many field, a list of tuples is expected.
+	Here is the list of tuple that are accepted, with the corresponding semantics ::
+
+	(0, 0,  { values })    link to a new record that needs to be created with the given values dictionary
+	(1, ID, { values })    update the linked record with id = ID (write *values* on it)
+	(2, ID)                remove and delete the linked record with id = ID (calls unlink on ID, that will delete the object completely, and the link to it as well)
+	(3, ID)                cut the link to the linked record with id = ID (delete the relationship between the two objects but does not delete the target object itself)
+	(4, ID)                link to existing record with id = ID (adds a relationship)
+	(5)                    unlink all (like using (3,ID) for all linked records)
+	(6, 0, [IDs])          replace the list of linked IDs (like using (5) then (4,ID) for each ID in the list of IDs)
+
+	Example:
+		[(6, 0, [8, 5, 6, 4])] sets the many2many to ids [8, 5, 6, 4]
+
++ For a one2many field, a lits of tuples is expected.
+	Here is the list of tuple that are accepted, with the corresponding semantics ::
+
+	(0, 0,  { values })    link to a new record that needs to be created with the given values dictionary
+	(1, ID, { values })    update the linked record with id = ID (write *values* on it)
+	(2, ID)                remove and delete the linked record with id = ID (calls unlink on ID, that will delete the object completely, and the link to it as well)
+
+	Example:
+		[(0, 0, {'field_name':field_value_record1, ...}), (0, 0, {'field_name':field_value_record2, ...})]
+endsnippet
+
+
+snippet default_encoding
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+#s = codecs.decode(s, 'unicode_escape')
+endsnippet
+
+snippet mtrue
+method=True
+endsnippet
+
+
+snippet compute_qty
+result = rec.product_id.uom_id._compute_quantity(1234, rec.product_uom, rounding_method='HALF-UP')
+endsnippet
+
+
+
+snippet retry
+def retry(f, maxtries=10, wait=2):
+	tried = 0
+	while True:
+		try:
+			result = f()
+			return result
+		except Exception, e:
+			tried += 1
+			if tried > maxtries:
+				logger.exception(e)
+				raise
+			logger.debug('retrying...')
+			import time
+			time.sleep(wait)
+endsnippet
+
+snippet subprocess
+import subprocess
+p = subprocess.Popen(['ls', '-l'])
+#p.communicate() #wait until done
+
+endsnippet
+
+snippet init  "V7"
+def __init__(self, pool, cr):
+	super($1, self).__init__(pool, cr)
+endsnippet
+
+snippet init  "V9"
+# besser _setup_fields verwenden als init; aber noch nicht getestet
+@api.model
+def _setup_fields(self, partial):
+	super($1, self)._setup_fields(partial)
+endsnippet
+
+
+snippet pprint
+from pprint import pprint
+with open('/tmp/data.txt', 'w') as f:
+	pprint({0}, stream=f)
+endsnippet
+
+snippet env_manage "with api.Environment.manage"
+# try nicht unbedingt notwendig; bei __exit__ wird ein close aufgerufen
+from odoo import registry
+db_registry = registry(self.env.cr.dbname)
+with api.Environment.manage(), db_registry.cursor() as cr:
+	env = api.Environment(cr, SUPERUSER_ID, {})
+
+endsnippet
+
+
+snippet barcode "Barcode as b64 to embedd in webkit/html"
+from StringIO import StringIO
+from barcode.writer import ImageWriter
+code = barcode.get('code39', 'mar', writer=ImageWriter())
+io = StringIO()
+code.write(io)
+io.seek(0)
+import base64
+code = base64.b64encode(io.read())
+
+endsnippet
+
+snippet copy
+def copy(self, default=None):
+	return super(${1:clazz}, self).copy(default=default)
+endsnippet
+
+snippet c=n
+context=None
+endsnippet
+
+snippet config
+v = self.env['ir.config_parameter'].get_param(key="${1}", default=${2:False})
+${0}
+endsnippet
+
+snippet kivy_imports
+from kivy.app import App
+from kivy.uix.widget import Widget
+from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
+from kivy.vector import Vector
+from kivy.clock import Clock
+from random import randint
+endsnippet
+
+snippet message_post "simple log"
+self.message_post(
+	body=job['body'],
+	subtype='mail.mt_comment',
+)
+endsnippet
+
+snippet message_post "To Partners"
+"""
+     - ``mail_create_nosubscribe``: at create or message_post, do not subscribe
+       uid to the record thread
+     - ``mail_create_nolog``: at create, do not log the automatic '<Document>
+       created' message
+     - ``mail_notrack``: at create and write, do not perform the value tracking
+       creating messages
+     - ``tracking_disable``: at create and write, perform no MailThread features
+       (auto subscription, tracking, post, ...)
+     - ``mail_save_message_last_post``: at message_post, update message_last_post
+       datetime field
+     - ``mail_auto_delete``: auto delete mail notifications; True by default
+       (technical hack for templates)
+     - ``mail_notify_force_send``: if less than 50 email notifications to send,
+       send them directly instead of using the queue; True by default
+     - ``mail_notify_user_signature``: add the current user signature in
+       email notifications; True by default
+"""
+self.message_post(subtype_id=self.env.ref("mail.mt_note'), body='${0}')
+
+# message_post "Message to default followers"
+self.message_post(body='${0}', ${1:subtype='${2:xmlid}'}, )
+# message_post "Message to certain partners (partner_ids ist in **kwargs in message_post enthalten)"
+self.message_post(body='${0}', ${1:subtype='${2:xmlid}'}, partner_ids=[(6,0, partner_ids)])
+endsnippet
+
+snippet field_states
+'Field_name': fields.char('String'', readonly=False, states={'Done': [('readonly', True)]}
+endsnippet
+
+snippet action_client_reload
+return {
+	'type': 'ir.actions.client',
+	'tag': 'reload'
+}
+endsnippet
+
+snippet action_client_reload
+#needs module web_actions
+#return {'type':  'ir.actions.act_close_wizard_and_refresh_view'}
+return {'type': 'ir.actions.client', 'tag': 'quick_reload'}
+endsnippet
+
+snippet index
+
+def init(self, cr):
+	cr.execute("SELECT indexname FROM pg_indexes WHERE indexname = '${1:indexname}'")
+	if not cr.fetchone():
+		cr.execute("""
+			CREATE UNIQUE INDEX $1
+			ON ${2:table} (${3:field})
+		""")
+endsnippet
+
+snippet autobahn "imports mit twisted"
+from twisted.internet import reactor
+from twisted.python import log
+from twisted.web.server import Site
+from twisted.web.static import File
+
+from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol, listenWS
+
+endsnippet
+
+snippet autobahn "start reactor from __main__"
+if __name__ == '__main__':
+
+	ServerFactory = ${1:BroadcastServerFactory}
+	debug = False
+
+	factory = ServerFactory("ws://localhost:${2:9000}", debug = debug, debugCodePaths = debug)
+	factory.protocol = ${3:BroadcastServerProtocol}
+	factory.setProtocolOptions(allowHixie76 = True)
+	listenWS(factory)
+
+	webdir = File(".")
+	web = Site(webdir)
+	reactor.listenTCP(${4:8081}, web)
+	reactor.run()
+
+endsnippet
+
+snippet autobahn ""
+class ${1:Broadcast}ServerProtocol(WebSocketServerProtocol):
+
+	def onOpen(self):
+		self.factory.register(self)
+
+	def onMessage(self, payload, isBinary):
+		if not isBinary:
+			payload = payload.decode('utf8')
+			self.factory.onMessage(payload)
+
+	def connectionLost(self, reason):
+		WebSocketServerProtocol.connectionLost(self, reason)
+		self.factory.unregister(self)
+
+
+class $1ServerFactory(WebSocketServerFactory):
+	def __init__(self, url, debug = False, debugCodePaths = False):
+		WebSocketServerFactory.__init__(self, url, debug = debug, debugCodePaths = debugCodePaths)
+		self.clients = []
+		self.tickcount = 0
+		self.dev = 0
+		self.sleeptime = 1
+		self.tick()
+
+	def onMessage(self, msg):
+		if msg == 'message1':
+			pass
+		elif msg == 'message2':
+			pass
+
+	def tick(self):
+		self.broadcast('any text which is broadcasted')
+		reactor.callLater(0.01, self.tick)
+
+	def register(self, client):
+		if not client in self.clients:
+			self.clients.append(client)
+
+	def unregister(self, client):
+		if client in self.clients:
+			self.clients.remove(client)
+
+	def broadcast(self, msg):
+		for c in self.clients:
+			c.sendMessage(msg.encode('utf8'))
+
+endsnippet
+
+snippet try_until_key
+try:
+	$0
+except KeyboardInterrupt:
+	pass
+endsnippet
+
+snippet dt
+from datetime import datetime
+endsnippet
+
+snippet exists_process
+def exists_process(part):
+	import psutil
+	ids = psutil.get_pid_list()
+	for id in ids:
+		print id
+		with open('/proc/{}/cmdline'.format(id), 'r') as f:
+			line = f.read()
+			if part in line:
+				return True
+	return False
+
+endsnippet
+
+snippet wrap
+def ${1:attribute_name}(method):
+	def wrapper(*args, **kwargs):
+		result = method(*args, **kwargs)
+		$0
+		return result
+	return wrapper
+endsnippet
+
+snippet controller_download_file
+content = base64.b64decode(attachment['datas'])
+
+return http.request.make_response(content, [
+	('Content-Type', 'application/octet-stream; charset=binary'),
+	('Content-Disposition', content_disposition(attachment['name']))
+])
+endsnippet
+
+snippet spg8
+request.registry.get("$1")$0
+endsnippet
+
+snippet reroute
+request.registry['ir.http'].reroute(first_menu.url)
+endsnippet
+
+snippet needaction "Inherit"
+_inherit = ['ir.needaction_mixin']
+endsnippet
+
+snippet search
+def search(self, args, offset=0, limit=None, order=None, count=False):
+	result = super(${0}, self).search(args, offset=offset, limit=limit, order=order, count=count)
+	return result
+endsnippet
+
+snippet read
+@api.multi # not working by that; list returned
+def read(self, fields=None, load='_classic_read'):
+	result = super($1, self).read(fields=fields, load=load)
+endsnippet
+
+snippet exchange_report
+report_sxw.report_sxw._services.pop("report.stock.picking.list")
+report_sxw.report_sxw('report.stock.picking.list', 'stock.picking', parser=lieferschein)
+endsnippet
+
+snippet auto_init
+def _auto_init(self, cr, context=None):
+	super(${clazz}, self)._auto_init(cr, context)
+	index_name = "{1:index_name}"
+	cr.execute("SELECT indexname FROM pg_indexes WHERE indexname = '$1'")
+	if not cr.fetchone():
+		cr.execute('CREATE INDEX $1 ON ${2:table} (${3:columns})')
+
+endsnippet
+
+snippet auto_init "add column no error"
+    def _auto_init(self, cr, context=None):
+        result = super(res_users, self)._auto_init(cr, context)
+        cr.execute('''
+            DO $$
+            BEGIN
+                BEGIN
+                    ALTER TABLE res_users add COLUMN signature varchar(255);
+                EXCEPTION
+                    WHEN duplicate_column THEN RAISE NOTICE 'ignore';
+                END;
+            END;
+        $$
+        ''')
+        return result
+endsnippet
+
+snippet exc_redirect
+raise RedirectWarning(msg, action.id, _('Go to the configuration panel'))
+endsnippet
+
+snippet model_new
+from odoo import _, api, fields, models, SUPERUSER_ID
+from odoo.exceptions import UserError, RedirectWarning, ValidationError
+class $1(models.Model):
+	_name = '$2'
+endsnippet
+
+snippet model_inherit
+from odoo import _, api, fields, models, SUPERUSER_ID
+from odoo.exceptions import UserError, RedirectWarning, ValidationError
+class $1(models.Model):
+	_inherit = '$2'
+
+endsnippet
+
+snippet setup_fields
+@api.model
+def _setup_fields(self, *args, **kwargs):
+	super(${1:klass}, self)._setup_fields(*args, **kwargs)
+	self._fields['....'].required = False
+endsnippet
+
+snippet property
+company_dependent=True
+endsnippet
+
+snippet route
+@http.route('${1:path}', auth='${2:user}${3:public}'${4:, website=True}${5:, type='json'})
+def ${1/[\.\/]/_/g}(self):
+	$0
+endsnippet
+
+snippet ormcache
+@tools.ormcache('param1', 'param2')
+def doit(self, param1, param2):
+
+zum loeschen (approbiert mit V9 05.01.2018)
+self.env['model'].method.clear_cache(self)
+
+@tools.ormcache(skiparg=1)  # noch nicht sicher ob 0 oder 1
+def doit(self, param1, param2):
+
+@api.one  (evtl. auch multi)
+@tools.ormcache('self')
+
+@api.model
+@tools.ormcache('self._uid')
+def context_get(self):
+    .....
+
+endsnippet
+
+
+snippet contrains "V8 unique name"
+@api.one
+@api.constrains("${1:name}")
+def _check_name(self):
+	if self.search([('$1', '=', self.name), ('id', '!=', self.id)]):
+		raise ValidationError("$1 must be unique!")
+endsnippet
+
+snippet redis
+import redis
+from redis import StrictRedis
+conn = StrictRedis()
+conn.set('test', 'value')
+conn.rpush("anton", 4)
+print conn.blpop('anton')
+print conn.lrange('anton', 0, -1)
+endsnippet
+
+snippet excepthook
+def myexcepthook(exctype, value, traceback):
+    if exctype == KeyboardInterrupt:
+        print "Handler code goes here"
+    else:
+        sys.__excepthook__(exctype, value, traceback)
+sys.excepthook = myexcepthook
+endsnippet
+
+snippet fS "selection relate wrapper"
+def _get_order_selection(self, *args, **kwargs):
+	return self.env['sale.order']._fields['state'].selection
+order_state = fields.Selection(related='order_id.state', store=False, selection=lambda self, *args, **kwargs: self._get_order_selection(*args, **kwargs))
+endsnippet
+
+snippet field_default_user
+user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+endsnippet
+
+snippet res.lang.format
+dt = fields.Datetime.now()
+langs = self.env['res.lang'].search([('code', '=', self.env.user.lang)])
+format_date = langs["date_format"]
+format_time = langs["time_format"]
+
+def do_format_date(dt):
+	if not dt:
+		return ''
+	return self.format_tz(dt, tz=self.env.user.tz, format=format_date)
+
+def do_format_currency(value):
+	if not value:
+		return ''
+	return langs.format('%.2f', value, grouping=True, monetary=True)
+endsnippet
+
+snippet redirect "controller redirect V9"
+import werkzeug
+from werkzeug import url_encode
+
+@http.route('/mail/follow', type='http', auth='user', methods=['GET'])
+def mail_action_follow(self,  model, res_id, token=None):
+	messaging_action = request.env['mail.thread']._get_inbox_action_xml_id()
+	url = '/web#%s' % url_encode({'action': messaging_action})
+	return werkzeug.utils.redirect(url)
+
+
+@classmethod
+def _redirect_to_record(cls, model, res_id):
+	uid = request.session.uid
+	url_params = {
+		'view_type': record_action['view_type'],
+		'model': model,
+		'id': res_id,
+		'active_id': res_id,
+		'view_id': record_sudo.get_formview_id(),
+		'action': record_action.get('id'),
+	}
+	url = '/web?#%s' % url_encode(url_params)
+	return werkzeug.utils.redirect(url)
+endsnippet
+
+snippet does_pool_init
+(not self.pool._init or getattr(threading.currentThread(), 'testing', False)):
+endsnippet
+
+snippet testing
+getattr(threading.currentThread(), 'testing', False)
+endsnippet
+
+snippet message_subscribe
+thread_document.message_subscribe([user.partner_id.id], channel_ids)
+thread_document.message_subscribe_users(user_ids)
+endsnippet
+
+snippet url_action
+return {
+	'type': 'ir.actions.act_url',
+	#'url': 'http://www.mut.de',
+	'url': '/web/content/{}?download=True'.format(self.attachment_ids[0].id),
+	'target': 'self'
+}
+
+# remarks: self instead of current, then it worked
+endsnippet
+
+snippet float
+from odoo.tools.float_utils import float_is_zero, float_compare
+endsnippet
+
+snippet module_resource
+img_path = odoo.modules.get_module_resource('base', 'static/src/img', 'money.png')
+endsnippet
+
+snippet migration
+from odoo import api, SUPERUSER_ID
+
+def migrate(cr, version):
+	env = api.Environment(cr, SUPERUSER_ID, {})
+endsnippet
+
+snippet float_round
+price = tools.float_round(price, precision_rounding=rule.price_round)
+endsnippet
+
+
+snippet recompute
+self._recompute_todo(self._fields['${1: field}'])
+self.recompute()
+endsnippet
+
+snippet env_no_recompute "env with no recompute"
+with recs.env.norecompute():
+	$0
+endsnippet
+
+
+snippet api_return_self
+@api.returns('self', lambda value: value.id)
+endsnippet
+
+snippet pre_init_hook
+'pre_init_hook': 'hook_pre_init',
+'post_init_hook': 'hook_post_init',
+
+def hook_pre_init(cr):  # in __init__.py
+
+def post_init_hook(cr, reg):
+    Environment.reset()
+    env = Environment(cr, 1, context={})
+    # env['ir.attachment'].search([])._get_filesize_char()
+endsnippet
+
+snippet controller_download_pdf_concat_reports "download pdf concated reports"
+@http.route('/newsletter/make_pdf', auth='user', website=True, type='http')
+def get_complete_pdf(self, *params, **kwparams):
+	nl_id = request.httprequest.args.get('nl_id')
+	recipient_id = request.httprequest.args.get('recipient_id')
+
+	nl = request.env['crm.newsletter'].browse(nl_id)
+	recipient = request.env['crm.newsletter.subject.recipient'].browse(recipient_id)
+
+	files = []
+	for report in nl.report_ids:
+		if recipient.computed_partner_id:
+			result_binary, format = self.env['ir.actions.report.xml'].render_report(recipient.computed_partner_id.ids, report.report_name, data={})
+			filepath = Path(tempfile.mktemp())
+			filepath.write_binary(result_binary)
+			files.append(filepath)
+
+	filepath = Path(tempfile.mktemp())
+	os.system("pdftk {} cat output {}".format(
+		" ".join(files),
+		filepath
+	))
+	content = filepath.read_bytes()
+
+	return http.request.make_response(content, [
+			('Content-Type', 'application/octet-stream; charset=binary'),
+			('Content-Disposition', content_disposition("{}-{}.pdf".format(nl_id, recipient_id)))
+	])
+endsnippet
+
+snippet monkeypatch ">=V11"
+# basically methods all models depending on a value at ir.model
+class IrModel(models.Model):
+	_inherit = 'ir.model'
+
+	crit_field = fields.Bool....
+
+	@api.multi
+	def _patch_quick_create(self):
+
+		def _wrap_name_create():
+				@api.model
+				def wrapper(self, name):
+					...................
+				return wrapper
+
+		method_name = '${1:the_method_name_to_patch}'
+		for model in self:
+			model_obj = self.env.get(model.model)
+			if not isinstance(model_obj, models.BaseModel):
+				continue
+			if model.avoid_quick_create:
+				model_obj._patch_method(method_name, _wrap_name_create())
+			else:
+				method = getattr(model_obj, method_name, None)
+				if method and hasattr(method, 'origin'):
+					model_obj._revert_method(method_name)
+		return True
+
+	def _register_hook(self):
+		models = self.search([])
+		models._patch_quick_create()
+		return super(IrModel, self)._register_hook()
+
+	@api.model
+	def create(self, vals):
+		ir_model = super(IrModel, self).create(vals)
+		ir_model._patch_quick_create()
+		return ir_model
+
+	@api.multi
+	def write(self, vals):
+		res = super(IrModel, self).write(vals)
+		self._patch_quick_create()
+		return res
+
+endsnippet
+
+snippet build_model
+@classmethod
+def _build_model(cls, pool, cr):
+	model = super(User, cls)._build_model(pool, cr)
+	ModelCls = type(model)
+	ModelCls.SELF_WRITEABLE_FIELDS += ['sipaccount_originate_id']
+	return model
+endsnippet
+
+snippet check_if_comment_on_wall
+if self.subtype_id != self.env.ref('mail.mt_note') and \
+endsnippet
+
+snippet mail_activity
+self.env['mail.activity'].create({
+	'summary': {1:heading},
+	'note': {2:your_text},
+	'activity_type_id': False,
+	'activity_category': 'default',
+	'date_deadline': fields.Datetime.now(),
+	'res_model_id': self.env['ir.model']._get('{3:model}').model,
+	'res_id': {4:res_id},
+	'user_id': self.env.user.id,
+})
+endsnippet
+
+snippet ot
+odoo_trace()
+endsnippet
+
+snippet invalidate_cache
+self.invalidate_cache(fnames=[${1:'field1', 'field2'}], ids=None)
+endsnippet
+
+snippet stock.quant "stock.quant v11"
+available_quantity = self.env['stock.quant']._get_available_quantity(self.product_id, self.location_id)
+endsnippet
+
+
+snippet cr_after
+threaded_print = threading.Thread(target=self._print, args=())
+
+db_registry = registry(dbname)
+with api.Environment.manage(), db_registry.cursor() as cr:
+	env = api.Environment(cr, SUPERUSER_ID, _context)
+	env['mail.mail'].browse(email_ids).send()
+def _print():
+self._cr.after('commit', threaded_print.start)
+endsnippet
+
+snippet fields "One2many with domain at res_id res_model"
+activity_ids = fields.One2many(
+	'mail.activity', 'res_id', 'Activities',
+	auto_join=True,
+	groups="base.group_user",
+	domain=lambda self: [('res_model', '=', self._name)])
+endsnippet
+
+snippet mute_logger
+try:
+	with self._cr.savepoint(), tools.mute_logger('odoo.sql_db'):
+		variant.unlink()
+# We catch all kind of exception to be sure that the operation doesn't fail.
+except (psycopg2.Error, except_orm):
+	variant.write({'active': False})
+	pass
+endsnippet
+
+snippet safe_eval
+from odoo.tools.safe_eval import safe_eval
+endsnippet
+
+snippet optimization
+ self.env['res.partner'].with_context(prefetch_fields=False).mapped('name')  # fast
+
+ with self.env.norecompute():
+     for line in order.line ....
+self.recompute()
+
+
+#disable value tracking
+record.with_context(mail_notrack=Ture)
+
+#disable all mail features autosubscription, value tracking ...
+record.with_context(tracking_disable=True)
+
+endsnippet
+
+snippet NewId
+from odoo.models import NewId
+endsnippet
+
+snippet expression
+from odoo.osv import expression
+
+expression.AND([dom1, dom2])
+endsnippet
+
+snippet registry "registry descendants"
+registry(self.env.cr.dbname).descendants(['suggestion.mixin'], '_inherit')
+endsnippet
+
+snippet profile
+from odoo.tools.profiler import profile
+
+@profile
+endsnippet
+
+snippet expression
+from odoo.osv import expression
+expression.OR
+expression.AND
+endsnippet
+
+snippet post_init
+def _auto_init(self):
+	self.pool.post_init(self.update_dynamic_fields)
+	return super(Product, self)._auto_init()
+endsnippet
+
+snippet CouldNotSerializeRetry
+from psycopg2 import OperationalError
+from odoo.service.model import PG_CONCURRENCY_ERRORS_TO_RETRY
+
+ids = self.env['stock.picking'].search([('state', 'not in', ['done', 'cancel'])], order='id')
+while ids:
+	id = ids.pop(0)
+	logger.info("Compute blocked for {}".format(id))
+	db_registry = registry(self.env.cr.dbname)
+	with api.Environment.manage(), db_registry.cursor() as cr:
+		env = api.Environment(cr, 1, {})
+		picking = env['stock.picking'].browse(id)
+		try:
+			picking._compute_blocked()
+		except OperationalError as err:
+			if err.pgcode not in PG_CONCURRENCY_ERRORS_TO_RETRY:
+				raise
+			ids.append(id)
+			logger.info("Retrying compute blocked for {}".format(id))
+endsnippet
+
+snippet AbstractComponent
+from odoo.addons.component.core import AbstractComponent
+endsnippet
+
+snippet get_module_icon
+from odoo import modules
+modules.module.get_module_icon(self.env[activity['model']]._original_module)
+endsnippet
+
+snippet read_group
+read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True)
+endsnippet
+
+snippet import_job
+from odoo.addons.queue_job.job import job
+endsnippet
+
+snippet model_based_on_view
+from odoo import models, api, tools, _
+
+class ${1/\./_/g}(models.Model):
+	_name = "${1:model_name}
+	_auto = False
+	"${3:field_name}": fields.char("${4:field_title}", readonly=True,size=100)
+
+    @api.model_cr
+	def init(self):
+		tools.drop_view_if_exists(self._cr, self._table)
+		self._cr.execute("""
+				CREATE or REPLACE view $5 as (
+					SELECT
+						res_partner.id,
+						res_partner.name as name
+					FROM
+						res_partner
+					WHERE
+						res_partner.id > 10
+				)
+		""")
+endsnippet
+
+
+snippet import_queuejob
+from odoo.addons.queue_job.job import job
+endsnippet
+
+
+snippet sending_mail
+# tested in odoo 11
+
+# informing all subscribers PLUS partner_ids
+ticket.with_context(force_author_id=2, notify_restrict_partners=True).message_post_with_template(
+	template.id,
+	partner_ids=[[4, ticket.user_id.partner_id.id]],
+	subtype_id=self.env.ref('mail.mt_comment').id,
+)
+
+# informing all internal subscribers PLUS partner_ids
+ticket.with_context(force_author_id=2, notify_restrict_partners=True).message_post_with_template(
+	template.id,
+	partner_ids=[[4, ticket.user_id.partner_id.id]],
+	subtype_id=self.env.ref('mail.mt_note').id,
+)
+endsnippet
+
+snippet message_post_with_view
+self.message_post_with_view(
+	"connector_task.mt_summary_template",
+	values={
+		'self': self,
+		'jobstate': jobstate,
+		'affected_records': affected_records,
+	},
+	subtype_id=self.env.ref("connector_task.mt_summary").id,
+)
+endsnippet
+
+snippet secure_filename
+from werkzeug.utils import secure_filename
+endsnippet
+
+snippet message_notify "V13"
+subtype_id = self.env.ref('helpdesk_notify_new_helpdesk.new_ticket').id
+values = {'url': url, 'obj': self}
+body = self.env.ref('helpdesk_notify_new_helpdesk.new_ticket_template').render(values, engine='ir.qweb', minimal_qcontext=True)
+body = self.env['mail.thread']._replace_local_links(body)
+self.message_notify(
+	res_id=self.id,
+	model=self._name,
+	#subtype="mail.mt_comment", # subtype_id,
+	subtype_id=subtype_id,
+	partner_ids=partner_ids,
+	subject=_("New Ticket: {} - {}").format(self.number, self.name),
+	body=body,
+)
+endsnippet
+
+snippet stock_move_line_create
+dict(move._prepare_move_line_vals(), qty_done=quantity_done)
+endsnippet
+
+snippet retryable_error
+raise 6,(
+	"Observing: found undone preceding jobs",
+	seconds=60,
+	ignore_retry=True,
+)
+endsnippet
+
+snippet testABC
+abc
+endsnippet
+
+snippet unittest_tag_post_install
+@odoo.tests.common.tagged('post_install', '-at_install')
+class TestWebsiteSequence(odoo.tests.TransactionCase):
+endsnippet
+
+snippet onchange
+@api.onchange(${fields})
+def onchange_${name}(self):
+	res = {'domain': {}}
+	res['domain']['product_uom_id'] = []
+	res['warning'] = {
+		'title': _('Model %s does not exist') % self.relation,
+		'message': _('Please specify a valid model for the object relation'),
+	}
+	return res
+endsnippet
+
+
+snippet onchange_like_odoo
+onchanges = {
+	'_onchange_partner_id': ['set_self_invoice'],
+}
+for onchange_method, changed_fields in onchanges.items():
+	if any(f not in vals for f in changed_fields):
+		invoice = self.new(vals)
+		getattr(invoice, onchange_method)()
+		for field in changed_fields:
+			if field not in vals and invoice[field]:
+				vals[field] = invoice._fields[field].convert_to_write(invoice[field], invoice)
+endsnippet
+
+snippet lock_wait
+try:
+	self.env.cr.execute("select id from cicd_release where id=%s for update nowait", (self.release_id.id,))
+except psycopg2.errors.LockNotAvailable:
+	raise RetryableJobError(f"Could not work exclusivley on release {self.release_id.id} - retrying in few seconds", ignore_retry=True, seconds=15)
+endsnippet
+
+snippet download
+def _get_attachment(self):
+	atts = self.env['ir.attachment'].search([
+		('res_field', '=', 'content'),
+		('res_id', '=', self.id),
+		('res_model', '=', self._name)
+	])
+	return atts
+
+def download(self):
+	atts = self._get_attachment()
+	if not atts:
+		raise UserError("No file found.")
+	return {
+		'type': 'ir.actions.act_url',
+		'url': '/web/content/{}/{}?download=True'.format(
+			atts[0].id,
+			self.content_filename,
+		),
+		'target': 'self'
+	}
+endsnippet
+
+snippet testing_foundings
+super().setUpClass()
+cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
+
+
+l10n_gcoa = self.env['ir.module.module'].search([('name', '=', 'l10n_generic_coa')])
+l10n_gcoa.button_install()
+self.assertEqual(l10n_gcoa.state, 'installed')
+
+endsnippet
+
+snippet currency_compute
+price_unit = invline.invoice_id.currency_id.with_context(date=fields.Date.today()).compute(invline.price_subtotal, target_currency)
+endsnippet
+
+snippet odoo-tools
+from odoo.tools import (
+    float_is_zero,
+    float_compare,
+    safe_eval,
+    date_utils,
+    email_split,
+    email_escape_char,
+    email_re,
+)
+endsnippet
+snippet click_completion_setup
+@click.option(
+    "-x",
+    "--execute",
+    is_flag=True,
+    help=("Execute the script to insert completion into users rc-file."),
+)
+def completion(execute):
+    shell = os.environ["SHELL"].split("/")[-1]
+    rc_file = Path(os.path.expanduser(f"~/.{shell}rc"))
+    line = f'eval "$(_${1:/\w+/\u$0/g}_COMPLETE={shell}_source ${1:exec_name})"'
+    if execute:
+        content = rc_file.read_text().splitlines()
+        if not list(
+            filter(
+                lambda x: line in x and not x.strip().startswith("#"),
+                content,
+            )
+        ):
+            content += [f"\n{line}"]
+            click.secho(
+                f"Inserted successfully\n{line}"
+                "\n\nPlease restart you shell."
+                )
+            rc_file.write_text('\n'.join(content))
+        else:
+            click.secho("Nothing done - already existed.")
+    else:
+        click.secho("\n\n" f"Insert into {rc_file}\n\n" f"echo '{line}' >> {rc_file}" "\n\n")
+
+endsnippet
+snippet pudb
+import pudb;pudb.set_trace()
+endsnippet
+
+snippet vim
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+endsnippet
+
+snippet T
+True
+endsnippet
+
+snippet F
+False
+endsnippet
+
+snippet lxml
+# cheatsheet lxml
+from lxml import etree
+doc = etree.XML(string)
+xml = etree.tostring(doc)
+subnode = etree.SubElement(parentnode, tagname, {'attrib1': value1})
+node.set("attrib", value)
+node.pop("attrib")
+value = node.get("attrib")
+node.getparent().remove(subnode)
+endsnippet
+
+snippet unicodedecode
+a = a_string.encode("ascii", "xmlcharrefreplace")
+# a: "HEINE&#160;mini 3000&#174; Dermatoscope "
+endsnippet
+
+snippet #!
+#!/usr/bin/python
+endsnippet
+
+snippet remove_whitespace
+import string
+$1 = $1.translate(None, string.punctuation + string.whitespace)
+endsnippet
+
+snippet b64decode
+base64.b64decode($1)$0
+endsnippet
+
+snippet b64encode
+base64.b64encode($1)$0
+endsnippet
+
+snippet b64encode "b64encode python3"
+base64.encodestring($1)$0
+endsnippet
+
+snippet ni
+raise Exception("not implemented")
+endsnippet
+
+snippet tempfile
+file = tempfile.mktemp(suffix='.${1:}')
+# no create
+filepath = Path(tempfile._get_default_tempdir()) / next(tempfile._get_candidate_names())
+$1
+endsnippet
+
+snippet __all__
+import os
+import glob
+__all__ = [ os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__)+"/*.py")]
+endsnippet
+
+snippet profile
+from functools import wraps
+PROF_DATA = {}
+PROF=True
+def removeNonAscii(s):
+	if not s:
+		return ""
+	return "".join(i for i in s if ord(i)<128)
+
+def print_prof_data():
+	if PROF:
+		print "##########################################"
+		import numpy
+		for fname, data in PROF_DATA.items():
+			max_time = numpy.max(data[1])
+			avg_time = numpy.average(data[1])
+			total_time = numpy.sum(data[1])
+			print "Function %s called %d times. " % (fname, data[0]),
+			print 'Execution time max: %.3f, average: %.3f, total: %.3f' % (max_time, avg_time, total_time)
+		print "##########################################"
+
+
+def profile(fn):
+	@wraps(fn)
+	def with_profiling(*args, **kwargs):
+		import time
+		start_time = time.time()
+		ret = fn(*args, **kwargs)
+		elapsed_time = float(time.time() - start_time)
+		if fn.__name__ not in PROF_DATA:
+			PROF_DATA[fn.__name__] = [0, []]
+		PROF_DATA[fn.__name__][0] += 1
+		PROF_DATA[fn.__name__][1].append(elapsed_time)
+
+		return ret
+	return with_profiling
+
+	def __init__(self, getter):
+		pass
+
+def clear_prof_data():
+	global PROF_DATA
+	PROF_DATA = {}
+endsnippet
+
+snippet re "findall"
+import re
+re.findall(r'\d+', text)
+endsnippet
+
+snippet current_dir
+import inspect
+import os
+from pathlib import Path
+current_dir = Path(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+endsnippet
+
+snippet doc
+"""
+${1}
+
+Arguments:
+${2} -- ${3}
+
+Returns:
+${4}
+"""
+
+endsnippet
+
+snippet argparse
+parser = argparse.ArgumentParser(description='Interface Products for website.')
+parser.add_argument('--h', metavar="host", type=str, help='openerp host', required=True)
+parser.add_argument('--reboot', action="store_true")
+parser.add_argument('--no-reboot', action="store_false")
+args = parser.parse_args()
+endsnippet
+
+snippet argparse "argparse - wohl zu praeferieren"
+from optparse import OptionParser
+from ConfigParser import SafeConfigParser
+
+config = SafeConfigParser()
+parser = OptionParser(
+    description='Migrate script for the impatient or lazy. '
+    'Makes a copy of your database, downloads the files necessary to migrate '
+    'it as requested and runs the migration on the copy (so your original '
+    'database will not be touched). While the migration is running only '
+    'errors are shown, for a detailed log see ${branch-dir}/migration.log')
+parser.add_option(
+    "-C", "--config", action="store", type="string",
+    dest="config",
+    help="current openerp config (required)")
+parser.add_option(
+    "-D", "--database", action="store", type="string",
+    dest="database",
+    help="current openerp database (required if not given in config)")
+parser.add_option(
+    "-B", "--branch-dir", action="store", type="string",
+    dest="branch_dir",
+    help="the directory to download openupgrade-server code to [%default]",
+    default='/var/tmp/openupgrade')
+parser.add_option(
+    "-R", "--run-migrations", action="store", type="string",
+    dest="migrations",
+    help="comma separated list of migrations to run, ie. \"" +
+    ','.join(sorted([a for a in migrations])) +
+    "\" (required)")
+parser.add_option(
+    "-A", "--add", action="store", type="string", dest="add",
+    help="load a python module that declares a dict "
+    "'migrations' which is merged with the one of this script "
+    "(see the source for details). You also can pass a string "
+    "that evaluates to a dict. For the banking addons, pass "
+    "\"{'6.1': {'addons': {'banking': 'lp:banking-addons/6.1'}}}\"")
+parser.add_option("-I", "--inplace", action="store_true", dest="inplace",
+                  help="don't copy database before attempting upgrade "
+                  "(dangerous)")
+parser.add_option(
+    "-F", "--force-deps", action="store", dest="force_deps",
+    help="force dependencies from a dict of the form \"{'module_name': "
+    "['new_dependency1', 'new_dependency2']}\"")
+(options, args) = parser.parse_args()
+
+if not options.config or not options.migrations\
+        or not reduce(lambda a, b: a and (b in migrations),
+                      options.migrations.split(','),
+                      True):
+    parser.print_help()
+    sys.exit()
+
+config.read(options.config)
+endsnippet
+
+snippet logging_many_options
+import logging
+from logging.handlers import RotatingFileHandler
+
+FORMAT = '[%(levelname)s] %(name) -12s %(asctime)s %(message)s'
+logging.basicConfig(filename="/dev/null", format=FORMAT)
+logging.getLogger().setLevel(logging.DEBUG)
+root_logger = logging.getLogger('')  # root handler
+formatter = logging.Formatter(FORMAT)
+
+rh = RotatingFileHandler(maxBytes=200 * 1024, filename='/var/log/spc_errors.log')
+rh.setFormatter(formatter)
+rh.setLevel(logging.ERROR)
+root_logger.addHandler(rh)
+
+rh = RotatingFileHandler(maxBytes=200 * 1024, filename='/var/log/spc_debug.log')
+rh.setLevel(logging.DEBUG)
+rh.setFormatter(formatter)
+root_logger.addHandler(rh)
+
+rh = RotatingFileHandler(maxBytes=20 * 1024, filename='/var/log/spc_info.log')
+rh.setLevel(logging.INFO)
+rh.setFormatter(formatter)
+root_logger.addHandler(rh)
+
+loggers = {
+    "MEM": logging.ERROR,
+    "xmlda": logging.DEBUG,
+    "SPC": logging.ERROR,
+    "SCI": logging.ERROR,
+    "Idle": logging.ERROR,
+    "PlanAktiv": logging.ERROR,
+    "BLINK": logging.ERROR,
+}
+for logger in loggers:
+    logging.getLogger(logger).setLevel(loggers[logger])
+endsnippet
+
+snippet slug
+def slug(o):
+	if not o:
+		return False
+	try:
+		return o[0]
+	except:
+		return o
+endsnippet
+
+snippet logging_minimal_stdout "Minimal to stdout"
+FORMAT = '[%(levelname)s] %(name) -12s %(asctime)s %(message)s'
+logging.basicConfig(format=FORMAT)
+logging.getLogger().setLevel(logging.DEBUG)
+logger = logging.getLogger('')  # root handler
+endsnippet
+
+snippet decorator
+from functools import wraps
+
+def mydecorator(f):
+from functools import wraps
+
+def mydecorator(f):
+	@wraps(f)
+	def wrapped(*args, **kwargs):
+		print "Before decorated function"
+		r = f(*args, **kwargs)
+		print "After decorated function"
+		return r
+	return wrapped
+endsnippet
+
+snippet ipy
+from IPython import embed; embed()
+endsnippet
+
+snippet xlrd
+from xlrd import open_workbook
+file_content = base64.b64decode(me.file)
+wb = open_workbook(file_contents=file_content)
+sheet = wb.sheets()[0]
+
+for i in range(sheet.nrows):
+	try:
+		row = sheet.row_values(i)
+	except:
+		break
+endsnippet
+
+snippet tz "make date not naiv"
+from dateutil import tz
+tz.gettz(...) # verwenden, ansonsten kommt bei Europe/Berlin nach pytz 2014.3 LMT raus (53 Minuten)
+arrow.get(d).replace(tzinfo=tz.gettz("Europe/Berlin"))
+# localize makes naiv to non naiv; date not changed: DONT USE REPLACE!!!! http://stackoverflow.com/questions/24359540/why-doesnt-pytz-localize-produce-a-datetime-object-with-tzinfo-matching-the-t
+d1 = pytz.timezone('Europe/Berlin').localize(datetime.strptime(d1, "%Y-%m-%d %H:%M:%S")).astimezone(tz=pytz.utc)
+endsnippet
+
+snippet mako
+from mako.template import Template
+text = Template(context['invoice_name']).render(obj=me, year=context['year'])
+endsnippet
+
+snippet vimsettings
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+endsnippet
+
+snippet stdout
+devnull = open(os.devnull, 'wb')
+check_call(('tar', 'xf', filepath), stdout=devnull)
+endsnippet
+
+snippet ctrlc
+import signal
+import sys
+def signal_handler(signal, frame):
+	print('You pressed Ctrl+C!')
+	sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+print('Press Ctrl+C')
+signal.pause()
+endsnippet
+
+snippet requests
+s = requests.Session()  # avoid keep alive
+r = s.get(url, timeout=3) # default 10 seconds
+r = requests.post(url, data=params)
+
+t.text[:300]
+
+endsnippet
+
+snippet caller-name
+inspect.stack()[1][3]
+endsnippet
+
+snippet PickledRedis
+
+import redis
+import pickle
+
+class PickledRedis(redis.StrictRedis):
+    def get(self, name):
+        pickled_value = super(PickledRedis, self).get(name)
+        if pickled_value is None:
+            return None
+        return pickle.loads(pickled_value)
+
+    def set(self, name, value, ex=None, px=None, nx=False, xx=False):
+        return super(PickledRedis, self).set(name, pickle.dumps(value), ex, px, nx, xx)
+endsnippet
+
+snippet hook_into_class
+
+def call_hook(cls):
+	def add_hook(_def):
+		defname = _def[0]
+		defcode = _def[1]
+		replaced_name = "____{}".format(defname)
+		print 'adding hook for {}'.format(defname)
+
+		def hook(self, *args, **kwargs):
+			print "Hooking into {}".format(defname)
+			result = defcode(self, *args, **kwargs)
+			print 'after method'
+			return result
+
+		try:
+			setattr(cls, defname, hook)
+			setattr(cls, replaced_name, defcode)
+		except (AttributeError, TypeError):
+			pass  # skip __name__ and __doc__ and the like
+	import inspect
+	defaultdefs = set(x[0] for x in inspect.getmembers(object, predicate=inspect.ismethod))
+	defs = inspect.getmembers(cls, predicate=inspect.ismethod)
+	for _def in defs:
+		if _def[0].startswith("__"):
+			continue
+		if _def[0] in defaultdefs:
+			continue
+		add_hook(_def)
+	return cls
+
+@call_hook
+class ANTONIA(object):
+	def a1(self, p1):
+		print 'hallo: {}'.format(p1)
+
+	def __init__(self):
+		self.started = datetime.now()
+		self.name = str(uuid.uuid4())
+endsnippet
+
+snippet allloggers
+for logger in logging.Logger.manager.loggerDict.keys():
+	logging.getLogger(logger).setLevel(logging.ERROR)
+endsnippet
+
+snippet excepthook
+def myexcepthook(exctype, value, traceback):
+    if exctype == KeyboardInterrupt:
+        os._exit(0)
+    else:
+        sys.__excepthook__(exctype, value, traceback)
+        logging.error(traceback)
+
+sys.excepthook = myexcepthook
+endsnippet
+
+snippet slice_array
+sliced_res_ids = [res_ids[i:i + batch_size] for i in range(0, len(res_ids), batch_size)]
+endsnippet
+
+snippet subprocess_read_pipe
+
+proc = subprocess.Popen(['/tmp/test.sh'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
+out = proc.stdout
+err = proc.stderr
+
+def reader(pipe, q):
+    try:
+        with pipe:
+            for line in iter(pipe.readline, ''):
+                q.put((pipe, line))
+    finally:
+        q.put(None)
+
+
+q = Queue()
+Thread(target=reader, args=[proc.stdout, q]).start()
+Thread(target=reader, args=[proc.stderr, q]).start()
+for source, line in iter(q.get, None):
+    if source == err:
+        logger.error(line)
+    else:
+        logger.info(line)
+
+proc.wait()
+
+endsnippet
+
+snippet iterfiles
+from itertools import chain
+result = (chain.from_iterable(glob(os.path.join(x[0], '*.tif')) for x in os.walk('.')))
+endsnippet
+
+snippet test "Unit Test"
+import unittest
+class Test(unittest.TestCase):
+	def setUp(self):
+		pass
+
+	def test_$1(self):
+
+		#self.assertTrue(...)
+		#self.assertEqual(..., ...)
+
+		pass
+
+if __name__ == '__main__':
+	unittest.main()
+endsnippet
+
+snippet logging_for_name "logger for __name__"
+logger = logging.getLogger(__name__)
+endsnippet
+
+snippet current_method_in_stack
+method_name = inspect.stack()[0][3]
+if method_name in [x[3] for x in inspect.stack()[1:]]:
+    return
+endsnippet
+
+snippet namemain
+if __name__ == '__main__':
+    $0
+endsnippet
+
+snippet cherryp
+import cherrypy
+from cherrypy.lib.static import serve_file
+import json
+import os
+
+
+# Author: Daniel Petermeier
+#
+# Monjerri is a HTTP Server based on cherrypy,
+# to provision SNOM Phones with VPN configurations and
+# configurations.
+
+# Published under IDC License.
+# Do what you want with it.
+
+# Usage: python3 monjerri.py
+
+# Requirements: - pip3 install cherrypy
+#               - users file containing a nested dictionary in json format: {"username":{"password":"abc1234","archivenr":"50","fts":"test50.tar"}}
+# Please be advised, to use Strong Passwords!
+# Other authentication methods are not supported by SNOM Phones
+
+# TODO: Implement anti-BruteForce-functionality
+# TODO: SSL Implementation possible with SNOM?
+
+class Provisioner(object):
+    default = "Welcome to the Provisioner!"
+    conf_path = "/root/config/provisioning_users.conf"
+    file_path = "/root/transfer"
+    users = {}
+
+    def read_conf(self):
+        if os.path.exists(self.conf_path):
+            with open(self.conf_path, "r") as f:
+                self.users = json.loads(f.read())
+
+    @cherrypy.expose
+    def index(self):
+        return self.default
+
+    @cherrypy.expose
+    def provision(self, u=None, p=None, x=None):
+        if not (u and p and x):
+            return self.default
+        self.read_conf()
+        try:
+            user = self.users[u]
+        except KeyError:
+            return self.default
+        if user["password"] == p and user["archivenr"] == x:
+
+            path = os.path.join(self.file_path, user["fts"])
+
+            if os.path.exists(path):
+                return serve_file(path, "application/x-gtar", "attachment")
+            else:
+                print("File Path not valid! {}".format(path))
+        else:
+            print("Params not valid! p={} ({}),  x={} ({})".format(p, user["password"], x, user["archivenr"]))
+        return self.default
+
+
+if __name__ == '__main__':
+    @cherrypy.tools.register('before_finalize', priority=60)
+    def secureheaders():
+        headers = cherrypy.response.headers
+        headers['X-Frame-Options'] = 'DENY'
+        headers['X-XSS-Protection'] = '1; mode=block'
+
+    conf = {
+        "global":
+        {
+                "server.socket_host": "0.0.0.0",
+                "server.socket_port": 8080,
+                "tools.staticdir.on": True,
+                "tools.staticdir.dir": "/root/transfer",
+        },
+        "/": {
+            "tools.sessions.on": True,
+            "tools.sessions.secure": True,
+            "tools.secureheaders.on": True,
+            "tools.encode.on": True,
+            "tools.encode.encoding": "utf-8"
+        },
+    }
+    cherrypy.quickstart(Provisioner(), "/", conf)
+endsnippet
+
+snippet graphviz
+import graphviz
+import pydot
+
+dot = pydot.Dot(graph_type='digraph')
+from pudb import set_trace
+set_trace()
+node1 = pydot.Node('mod1', style='filled', fillcolor='green')
+node2 = pydot.Node('Sir Bedevere the Wise')
+dot.add_node(node1)
+dot.add_node(node2)
+dot.add_edge(pydot.Edge(node1, node2))
+#dot.edges(('mod1', 'B'))
+#dot.render("/tmp/d.gv", view=True)
+
+from pudb import set_trace
+set_trace()
+dot.write_png('/tmp/test.png')
+endsnippet
+
+snippet ast "visitor example"
+import ast
+from pudb import set_trace
+set_trace()
+
+class v(ast.NodeVisitor):
+    def generic_visit(self, node):
+        print type(node).__name__
+        ast.NodeVisitor.generic_visit(self, node)
+
+x = v()
+t = ast.parse('toparse.py')
+x.visit(t)
+endsnippet
+
+snippet OrderedDict
+records.append(OrderedDict(sorted({
+    'Model': clazz.name,
+    'Field': field.name
+}.items(), key=lambda x: 1 if x[0] == 'Model' else 2)))
+endsnippet
+
+
+snippet md5chunked
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+endsnippet
+
+snippet isinstance_string
+isinstance($1, types.StringTypes)
+endsnippet
+
+snippet contextmanagerlib
+from contextlib import contextmanager
+
+@contextmanager
+def open_file(path, mode):
+    the_file = open(path, mode)
+    yield the_file
+    the_file.close()
+
+files = []
+
+for x in range(100000):
+    with open_file('foo.txt', 'w') as infile:
+        files.append(infile)
+
+for f in files:
+    if not f.closed:
+        print('not closed')
+endsnippet
+
+snippet contextmanagerdecorator
+from contextlib import ContextDecorator
+
+class makeparagraph(ContextDecorator):
+    def __enter__(self):
+        print('<p>')
+        return self
+
+    def __exit__(self, *exc):
+        print('</p>')
+        return False
+
+@makeparagraph()
+def emit_html():
+    print('Here is some non-HTML')
+
+emit_html()
+endsnippet
+
+snippet inquirer "inquirer choices"
+which = inquirer.prompt([inquirer.List('name', 'Choose', choices=hosts.keys())])
+endsnippet
+
+snippet chmodx "pathlib chmod+x"
+import stat
+${1:file}.chmod($1.stat().st_mode | stat.S_IEXEC)
+endsnippet
+
+snippet chunks
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+endsnippet
+
+snippet groupby
+from itertools import groupby
+for category, lines in groupby(self.order_line, lambda l: l.layout_category_id):
+endsnippet
+
+global !p
+def fraction(a, b):
+    try:
+        return "%.1f" % (float(a)/float(b))
+    except (ValueError, ZeroDivisionError):
+        return "ERR"
+endglobal
+
+snippet uuid
+`!p import uuid
+if not snip.c:
+    import os
+    snip.rv = str(uuid.uuid4())
+    snip.rv = snip.fn
+    snip.rv = os.getcwd()
+`
+endsnippet
+
+snippet jsonencode
+class StringEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return str(obj)
+
+json.dumps(data, cls=StringEncoder)
+endsnippet
+
+snippet bp
+breakpoint()
+endsnippet
+
+snippet trace
+import pudb
+pudb.set_trace()
+endsnippet
+
+snippet make-executable
+os.chmod(bin_autobot, os.stat(bin_autobot).st_mode | stat.S_IEXEC)
+endsnippet
+
+snippet pymongo
+from pymongo import MongoClient
+mongoclient = MongoClient(
+	os.environ["MONGO_HOST"],
+	int(os.environ['MONGO_PORT']),
+	username=os.environ['MONGO_USERNAME'],
+	password=os.environ['MONGO_PASSWORD'],
+	connectTimeoutMS=20000, socketTimeoutMS=20000, serverSelectionTimeoutMS=20000,
+)
+db = mongoclient.get_database('cicd_sites')
+
+db.fine_one({...})
+db.update_one({search}, {"$set": {}}, upsert=False)
+endsnippet
+
+snippet has_file_access
+if os.access(path, os.W_OK)
+endsnippet
+
+snippet trace
+trace = '\n'.join(traceback.format_stack())
+endsnippet
+
+snippet job-retry-error
+from odoo.addons.queue_job.exception import RetryableJobError
+endsnippet
+
+snippet rgetattr_rsetattr
+import functools
+
+def rsetattr(obj, attr, val):
+    pre, _, post = attr.rpartition('.')
+    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+def rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+    return functools.reduce(_getattr, [obj] + attr.split('.'))
+endsnippet
+

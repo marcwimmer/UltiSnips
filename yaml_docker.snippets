@@ -1,0 +1,73 @@
+extends yaml
+
+snippet compose
+
+version: "2.0"
+volumes:
+  db:
+
+services:
+  dns:
+    build: ./machines/openvpn/openvpn_dns
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data/ovpn/client:/opt/certs:ro
+	environment:
+	  VALUE1: 123
+    networks:
+      default:
+        ipv4_address: 5.5.5.205
+
+networks:
+    default:
+        driver: bridge
+        driver_opts:
+            com.docker.network.enable_ipv6: "false"
+        ipam:
+            driver: default
+            config:
+                - subnet: 5.5.5.0/24
+                  gateway: 5.5.5.1
+endsnippet
+
+snippet healthcheck "definition"
+healthcheck:
+	test: ["CMD-SHELL", "/root/tools/healthcheck.sh"]
+	interval: 15s
+	timeout: 5s
+	retries: 2
+endsnippet
+
+snippet healthcheck "depends_on"
+depends_on:
+    machine_name:
+        condition: service_healthy
+endsnippet
+
+snippet network "default network name"
+networks:
+	custom_network:
+		external:
+			name: ${custom_network_name}
+endsnippet
+
+snippet logging
+    logging:
+        options:
+            max-size: 100k
+endsnippet
+
+snippet compose_X11_application_host_network
+version: "3.3"
+
+services:
+  $1:
+    build: .
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    command: $2
+    network_mode: host
+    environment:
+      - DISPLAY
+endsnippet

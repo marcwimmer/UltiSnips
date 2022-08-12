@@ -1,0 +1,71 @@
+snippet table
+^ ${1:col1} ^ ${2:col2} ^
+| ${3:text1} | ${4:text2} \\ ${5:zweite Zeile} |
+endsnippet
+snippet hr
+----
+endsnippet
+
+snippet nspages
+<nspages -h1 -subns -exclude:start>
+endsnippet
+
+snippet h1
+====== $1 ======
+$0
+endsnippet
+
+snippet h2
+===== $1 =====
+$0
+endsnippet
+
+snippet h3
+==== $1 ====
+$0
+endsnippet
+
+snippet ul
+  * $1
+$0
+endsnippet
+
+snippet ol
+  * $1
+$0
+endsnippet
+
+snippet kbd
+<kbd>$1</kbd>$0
+endsnippet
+
+snippet code
+<Code:${1:type} linenums:${2:linenum}|${3:heading}>
+$4
+</Code>
+$0
+endsnippet
+
+snippet Wrap "Info"
+<Wrap info>$1</Wrap>
+endsnippet
+
+snippet Wrap "Download"
+<Wrap download>$1</Wrap>
+endsnippet
+
+snippet wrap "Info"
+<wrap info>$1</wrap>
+endsnippet
+
+snippet wrap "Download"
+<wrap download>$1</wrap>
+endsnippet
+
+snippet index
+<catlist ${1:namespace} -columns:3 -addPageButtonEach -noHead -sortAscending>
+endsnippet
+
+snippet changes
+{{changes>${1:ns=${2:namespace}}, count=99999, type = create&render = list(dayheaders, signature, nocomments, nouser)}}
+endsnippet

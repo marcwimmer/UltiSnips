@@ -1,0 +1,969 @@
+snippet datapolice
+<record model="data.police" id="${1:any_id}">
+  <field name="model">${2:model}</field>
+  <field name="checkdef">${3:def}</field>
+  OR expr using obj. == ....
+  <field name="expr">${3:def}</field>
+  <field name="name">${4:description}</field>
+  <field name="domain"></field>
+</record>
+endsnippet
+
+extends xml
+
+#================================================
+#Common
+#================================================
+snippet data
+<odoo>
+    <data noupdate='0'>
+
+    $0
+
+    </data>
+</odoo>
+
+endsnippet
+
+snippet xpath
+
+<xpath expr="//$1" position="$2">
+</xpath>
+
+endsnippet
+
+snippet record
+<record model="${1}" id="${2}">
+	<field name="${3}">${4}</field>
+</record>
+endsnippet
+
+snippet cronjob
+<record id="${1:ir_cronjobname_action}" model="ir.cron">
+	<field name="name">${1/\./_/g}</field>
+	<field name="interval_number">${3:5}</field>
+	<field name="interval_type">${4:minutes}</field>
+	<field name="model_id" ref="$5" />
+	<field name="state">code</field>
+	<field name="code">model.${6:method}()</field>
+	<field name="nextcall" eval="'2022-01-01 20:15:00'" />
+	<field name="numbercall">-1</field>
+</record>
+endsnippet
+
+#================================================
+#UI
+#================================================
+snippet mi "Menuitem"
+<menuitem name="${1:label}" parent="${2:parent_xml_id}" id="${3:id_of_menu}" ${4:web_icon="base,static/img/logo.png"}/>
+endsnippet
+
+snippet inv "attribute Invisible depending on another field value"
+{'invisible':[('${1:field}','=','${2:some_value}')]}
+endsnippet
+
+snippet req "attribute Required depending on another field value"
+{'required':[('${1:field}','=','${2:some_value}')]}
+endsnippet
+
+snippet btn_method_of_object
+<button name="${1:method_name}" string="${2:button_caption}" type="object" />
+endsnippet
+
+snippet btn_calling_action
+<button name="%(${1:action_id})d" string="${2:button_caption}" type="action" />
+endsnippet
+
+snippet btn_calling_action
+<button string="${1:string}" name="${2:action_id_complete}" type="action" ${3:class="oe_stat_button"}/>
+endsnippet
+
+snippet btn_cancel
+<button special="cancel" string="Cancel" class="oe_link" />
+endsnippet
+
+
+snippet form_new "new form"
+<record id="view_${1/\./_/g}_form" model="ir.ui.view">
+	<field name="name">$1 form</field>
+	<field name="model">${1:model}</field>
+	<field name="arch" type="xml">
+		<form string="$2">
+			<header></header>
+			<sheet>
+				<div class="oe_title">
+					<h1>
+						<field name="name" colspan="4" class="oe_inline" />
+					</h1>
+				</div>
+				<group string="${3:title}" col="4">
+					<field name="${4:field_name1}" />
+				</group>
+			</sheet>
+		</form>
+	</field>
+</record>
+endsnippet
+
+
+snippet wall "append after sheet V11"
+<!-- append after <sheet /> and inherit from mail.thread -->
+<div class="oe_chatter">
+    <field name="message_follower_ids" widget="mail_followers"/>
+	<field name="activity_ids" widget="mail_activity" />
+    <field name="message_ids" widget="mail_thread"/>
+</div>
+endsnippet
+
+snippet form_inherit "inherit form"
+<record id="view_${1/\./_/g}_form" model="ir.ui.view">
+	<field name="model">${1:model}</field>
+	<field name="inherit_id" ref="$CLIPBOARD"/>
+	<field name="arch" type="xml">
+        ${0}
+	</field>
+</record>
+endsnippet
+
+snippet field_simple
+<field name="${1}" />
+endsnippet
+
+snippet field_form-field-restrict-values-to-connected m2m-field
+<field name="${1}" domain="[('id', 'in', ${0:many2manyfield}[0][2])]"/>
+endsnippet
+
+snippet gantt
+    <record id="view_${1/\./_/g}_gantt" model="ir.ui.view">
+        <field name="model">${1:model}</field>
+        <field name="name">${2:name}</field>
+        <field name="type">calendar</field>
+        <field name="arch" type="xml">
+            <gantt date_start="${3:date_start}" date_stop="${4:date_stop}" string="${5:string}" />
+        </field>
+    </record>
+endsnippet
+
+snippet calendar
+    <record id="view_${1/\./_/g}_calendar" model="ir.ui.view">
+        <field name="model">${1:model}</field>
+        <field name="arch" type="xml">
+            <calendar string="${3:string}" date_start="${4:date_start}" date_stop="" color="user_id">
+            </calendar>
+        </field>
+    </record>
+endsnippet
+
+snippet kanban_new
+<record model="ir.ui.view" id="view_${1/\./_/g}_kanban">
+    <field name="model">${1:model}</field>
+    <field name="name">${2:name}</field>
+    <field name='type'>kanban</field>
+    <field name="arch" type="xml">
+        <kanban default_group_by="${3:group_col}">
+            <field name="name"/>
+            <templates>
+                <t t-name="kanban-box">
+                    <ul>
+                        <li t-if="record.name.raw_value">Name <field name="name"/></li>
+                    </ul>
+                </t>
+            </templates>
+        </kanban>
+
+    </field>
+</record>
+endsnippet
+
+snippet kanban_inherit
+<record model="ir.ui.view" id="view_${2/\./_/g}_kanban">
+    <field name="model">${2:model}</field>
+    <field name='type'>kanban</field>
+    <field name='inherit_id' ref="${1:}" />
+    <field name="arch" type="xml">
+        ${0}
+    </field>
+</record>
+endsnippet
+
+snippet decoration-info
+decoration-bf - shows the line in BOLD
+decoration-it - shows the line in ITALICS
+decoration-danger - shows the line in LIGHT RED
+decoration-info - shows the line in LIGHT BLUE
+decoration-muted - shows the line in LIGHT GRAY
+decoration-primary - shows the line in LIGHT PURPLE
+decoration-success - shows the line in LIGHT GREEN
+decoration-warning - shows the line in LIGHT BROWN
+fonts="bold:...
+ date_set&lt;=current_date
+endsnippet
+
+snippet tree-new
+<record id="view_${1/\./_/g}_tree" model="ir.ui.view">
+	<field name="model">${1:model}</field>
+	<field name="arch" type="xml">
+		<tree default_order="" string="${3:title}" ${4:decoration-danger="state!='done' and date_set&lt;=current_date"}>
+			<field name="name" optional="show hide"/>
+            ${0}
+		</tree>
+	</field>
+</record>
+endsnippet
+
+snippet tree-inherit
+<record id="view_${1/\./_/g}_tree" model="ir.ui.view">
+	<field name="model">${1:model}</field>
+    <field name="inherit_id" ref="${2:}"/>
+	<field name="arch" type="xml">
+        ${0}
+	</field>
+</record>
+endsnippet
+
+snippet filter-Bool
+<filter name='${1:name}' domain="[('name', '=', 'aaaa')]" string='${2:string}'/>
+endsnippet
+
+snippet filter-Today
+<filter name="today" domain="[('date', '&gt;=', context_today().strftime('%%Y-%%m-%%d') + ' 00:00:00')]" string="Today"/>
+endsnippet
+
+snippet filter-Search-simple
+<field name="${1:fieldname}" string="${2:string}" ${3:filter_domain="${4:domain}"}}"}/>
+example:
+<field name="name" string="Product Lots" filter_domain="['|','|',('name','ilike',self),('prefix','ilike',self),('ref','ilike',self)]"/>
+endsnippet
+
+snippet filter-Many2Field-with-filter-options
+<field name="user_id">
+     <filter name="my" domain="[('user_id','=',uid)]" help="My Tasks" />
+     <filter name="unassigned" domain="[('user_id','=',False)]" help="Unassigned Tasks" />
+</field>
+endsnippet
+
+snippet filterGroupBy
+<filter string="${1:string}" context="{'group_by': '${2:fieldname}:day|year|month'}"/>
+endsnippet
+
+snippet search-new
+<record id="view_${1/\./_/g}_search" model="ir.ui.view">
+	<field name="model">${1:model}</field>
+	<field name="arch" type="xml">
+	<search string="$2">
+		${0}
+		<filter string="" domain="[('', '=', )]" help="a tooltip" />
+		use snippet "filter"
+		<filter name="group_by_x" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
+		<filter name="group_by_y" string="Today"  domain="[('day', '=', current_date)]" context="{'group_by':'partner_id'}"/>
+	</search>
+	</field>
+</record>
+endsnippet
+
+snippet search-inherit
+<record id="view_${1/\./_/g}_search" model="ir.ui.view">
+	<field name="model">${1:model}</field>
+	<field name="inherit_id" ref="${2:}
+	<field name="arch" type="xml">
+		<data>
+			${0}
+		</data>
+	</field>
+</record>
+endsnippet
+
+snippet graph "graph: insert line graph view"
+<record model="ir.ui.view" id="view_${1/\./_/g}_line_graph">
+	<field name="model">${1:model}</field>
+	<field name="name">${2:title}</field>
+	<field name="type">graph</field>
+	<field name="arch" type="xml">
+	<graph string="$2">
+		<field name="pay_date" group="1" />
+		<field name="amount" operator="+" />
+	</graph>
+	</field>
+</record>
+endsnippet
+
+
+snippet header
+<header>
+    <button string="Confirm" name="hr_verify_sheet" states="draft" class="oe_highlight"/>
+    <field name="state" widget="statusbar" statusbar_visible="draft,confirm" attrs="{'readonly': True}" clickable='True'/>
+</header>
+endsnippet
+
+#================================================
+#Actions
+#================================================
+snippet act_server-action-with-menuitem
+<record model="ir.actions.server" id="act_${1:id_of_menu}_server">
+	<field name="name">$1</field>
+	<field name="type">ir.actions.server</field>
+	<field name="model_id" ref="model_${2:model}" />
+	<field name="state">code</field>
+	<field name="binding_model_id" eval="False"></field>
+    <field name="code">
+    # Available variables:
+#  - env: Odoo Environment on which the action is triggered
+#  - model: Odoo Model of the record on which the action is triggered; is a void recordset
+#  - record: record on which the action is triggered; may be be void
+#  - records: recordset of all records on which the action is triggered in multi-mode; may be void
+#  - time, datetime, dateutil, timezone: useful Python libraries
+#  - log: log(message, level='info'): logging function to record debug information in ir.logging table
+#  - Warning: Warning Exception to use with raise
+# To return an action, assign: action = {...}
+
+
+    </field>
+</record>
+<menuitem id="$1" parent="${5:parent_xml_id}" name="${4:label}" action="act_$1_server" />
+endsnippet
+
+snippet act-window-action-called-by-menu-item
+<record id='${1:id_of_menu}_action' model='ir.actions.act_window'>
+    <field name='name'>${2:name}</field>
+    <field name='res_model'>${3:model}</field>
+    <field name='view_mode'>${4:tree,form}</field>
+    ${5:<field name='context'>${6:context"}</field>}
+    ${7:<field name='domain'>${8:domain}</field>}
+    ${9:<field name='view_id' ref='${10:view_id}' />}
+    ${11:<field name="search_view_id" ref="${11}" />}
+    <field name="help"><![CDATA[<p> No $13 found!  </p>]]></field>
+</record>
+<menuitem parent="${12:parent_xml_id}" id="menu_$1" action="$1_action"/>
+endsnippet
+
+snippet act-server-action-on-more-button
+<record id="${1:id}" model="ir.actions.server">
+	<field name="name">${2:caption_on_morebutton}</field>
+	<field name="model_id" ref="model_$3"/>
+	<field name="binding_model_id" ref="model_$4"/>
+	<field name="state">code</field>
+	<field name="code">
+	for rec in records:....
+	if record:
+		action = record.$5()
+	Tipps:
+	env.ref('....')
+	</field>
+</record>
+
+endsnippet
+
+snippet act-client-action
+<record id="${1:id}_client_action" model="ir.actions.client">
+    <field name="name">$2</field>
+    <field name="tag">$3</field>
+    <!-- field name="params" eval="{'widget_id': ref('base.facebook_widget')}" /-->
+    <field name="params" eval="{}" />
+	<field name="context">{}</field>
+	<field name="res_model">res.partner</field>
+	<field name="target">fullscreen|new|current|main</field>
+</record>
+${4:<menuitem action="$1_client_action" id="$5" ${6:parent="$7"} />}
+${7:
+//Javascript:
+openerp.web.client_actions.add('$3', 'your.object');
+}
+
+endsnippet
+
+#=================================================
+#Wizards
+#================================================
+
+snippet report-Criteria-Form
+<sheet>
+<group string="" col="4">
+  <field name="date_start"/>
+  <field name="date_end"/>
+  <field name="product_ids" widget="many2many_tags"/>
+  <newline/>
+  <button name="%(${1:xmlid_report})d" string="Download" type="action"/>
+</group>
+</sheet>
+endsnippet
+
+#================================================
+#Report Excel
+#================================================
+
+snippet report-Excel
+<report id="${1:report_id}"
+	model="${2:model}"
+	name="${3:name}"  #iid of qweb view
+	string="${4:string}"
+    attachment="'$4' + time.strftime('%Y-%m-%d')"
+	report_type="excel"
+/>
+endsnippet
+
+#================================================
+#Report QWeb
+#================================================
+snippet report-qweb-pdf
+<!-- works with V11 !-->
+<!-- url to debug: http://host/report/pdf/$4/<id> -->
+<!-- QWeb Reports -->
+<report
+	id="$1"
+	model="$2"
+	string="$3"
+	report_type="qweb-pdf"
+	name="${4:name_with_leading_module_and_dot}"
+	${5:
+	print_report_name="(object.state in ('open','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+	}
+/>
+
+import time
+from odoo import api, fields, models
+
+class $6(models.AbstractModel):
+    _name = 'report.$4'
+
+    def _get_account_move_lines(self, partner_ids):
+        return None
+
+    @api.model
+    def get_report_values(self, docids, data=None):
+        #if not data.get('form'):
+        #    raise UserError(_("Form content is missing, this report cannot be printed."))
+
+        holidays_report = self.env['ir.actions.report']._get_report_from_name('hr_holidays.report_holidayssummary')
+        holidays = self.env['hr.holidays'].browse(self.ids)
+        return {
+            'doc_ids': self.ids,
+            'doc_model': holidays_report.model,
+            'docs': holidays,
+			...any data...
+        }
+
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="$4">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout or web.html_container">
+                <div class="page">
+                    <h2>Report title</h2>
+                    <p>This object's name is <span t-field="o.name"/></p>
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+
+</odoo>
+endsnippet
+
+#=================================================
+#Report
+#================================================
+snippet report-Report-Action
+<report
+	id="${1/\./_/g}_report_action"
+	model="${2:model}"
+	name="${1:id_qweb_view}"
+	string="${5:a_title}"
+	attachment="object.name + ' ' + time.strftime('%Y-%m-%d') + '.pdf'"
+	/>
+endsnippet
+
+#=================================================
+#Security
+#================================================
+snippet sec-Group-Category
+<record model="ir.module.category" id="${1:id}">
+    <field name="name">${2:name}</field>
+    ${3:<field name="description">${4:describe it}</field>}
+    ${5:<field name="parent_id" ref="$6" />}
+    ${7:<field name="sequence">${8:100}</field>}
+	<field name="visible" eval="True" />
+</record>
+endsnippet
+
+snippet sec-Group
+<record id="group_${1:name}" model="res.groups">
+	<field name="name">${1/_/\./g}</field>
+    <field name="users" eval="[(4, ref('base.user_root'))]"/>
+    <field name="category_id" ref="${2:category_id}"/>
+</record>
+endsnippet
+
+snippet sec-Manager-and-user-security group
+<record id="group_${1:internal_name}_manager" model="res.groups">
+	<field name="name">$1 / Manager</field>
+</record>
+<record id="group_$1_user" model="res.groups">
+	<field name="name">$1 / User</field>
+</record>
+endsnippet
+
+snippet sec-Domain-Filter-Rule-on-current-user
+<record id="property_rule_${1:name}_${2/\./_/g}" model="ir.rule">
+		<field name="domain_force">[('${3:field_name}','=',user.id)]</field>
+        <field name='model_id' ref='${2:model}' />
+		<field name="groups" eval="[[4, ref('$4')]]" />
+        <field name='perm_read' eval='True' />
+        <field name='perm_create' eval='False' />
+        <field name='perm_unlink' eval='False' />
+        <field name='perm_write' eval='False' />
+</record>
+endsnippet
+
+snippet sec-Domain-Filter-Rule-on-current-company
+<record id="domain_company__${2/\./_/g}" model="ir.rule">
+	<field name="domain_force">[('company_id','child_of', [user.company_id.id])]</field>
+    <field name='model_id' ref='model_${2:model}' />
+    <field name="groups" eval="[[4, ref('$4')]]" />
+    <field name='perm_read' eval='True' />
+    <field name='perm_create' eval='False' />
+    <field name='perm_unlink' eval='False' />
+    <field name='perm_write' eval='False' />
+</record>
+endsnippet
+
+snippet sec-Domain-Filter-Rule-filter-child_of
+<record id="${1:module}.property_rule_${2:model}" model="ir.rule">
+	<field name="domain_force">[('account_id','child_of', [active_id])]</field>
+	<field name="groups" eval="[[4, ref('$4')]]" />
+	<field name='perm_read' eval='True' />
+    <field name='perm_create' eval='False' />
+    <field name='perm_unlink' eval='False' />
+    <field name='perm_write' eval='False' />
+</record>
+endsnippet
+
+snippet sec-Global-Domain-Rule
+Auswertung:
+1. es geht um read: sucht nach read=True in global; wenn kein match, abbruch,kein recht
+2. dann in global pro group mit read=True; wenn kein match, dann abbruch
+<record id="rule_${1:model}_${2:rule_description}" model="ir.rule">
+	<field name="name">$1 $2</field>
+	<field name="model_id" ref="${1:model}" />
+	<field name="groups" eval="..." />
+	<!-- some samples: -->
+	<field name="domain_force">['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]</field>
+</record>
+endsnippet
+
+
+
+#============================
+#KANBAN
+#============================
+snippet kanban_con
+var con = openerp.sessions.session0.connection;
+con.rpc('${1:url}',
+    {
+        ${2:field}: ${3:value},
+    }, function(result) {
+        ${0}
+    }
+);
+endsnippet
+
+
+
+#============================
+#QWeb
+#============================
+snippet qweb-templates
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+</templates>
+endsnippet
+
+snippet qweb-template
+<t t-name="${1:name}">
+</t>
+endsnippet
+
+snippet qweb-inherit-template
+<t t-extend="$1" ${3:t-name="$4"}>
+    <t t-jquery="" t-operation="before">
+    </t>
+</t>
+endsnippet
+
+snippet qweb-qweb-report-structure
+<t t-name="sale.report_saleorder">
+    <t t-call="report.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang"/>
+        </t>
+    </t>
+</t>
+endsnippet
+
+snippet freplace
+<field name="${1:name}" position="replace">
+${0}
+</field>
+endsnippet
+
+snippet t-extend
+<t t-extend="${1:template_name}">
+    <t t-jquery="div.oe_msg_body" t-operation="${2:${3:after}${4:append}}">
+        ${0}
+    </t>
+</t>
+endsnippet
+
+snippet seq
+<record model="ir.sequence" id="${1/\./_/g}">
+    <field name="name">${1:id}</field>
+    <field name="implementation">no_gap</field>
+</record>
+endsnippet
+
+snippet sep
+<separator ${1:string="${2:string}"} ${3:orientation="vertical"} />
+endsnippet
+
+snippet delete
+<delete model="${1:model}" ${3:search="${4:search_domain}"} ${5:id="${6:id}"}   />
+$0
+endsnippet
+
+snippet function
+<function model="${1:model}" name="${2:funcname}">
+	<value>param1</value>
+</function>
+$0
+endsnippet
+
+snippet modseq "Sequence of order of how the file is inserted to __init__.py"
+'__openerp__.sequence${0}
+endsnippet
+
+snippet config
+<record model='ir.config_parameter' id='${1:id}'>
+    <field name='key'>${2:key}</field>
+    <field name='value'>${3:value}</field>
+</record>
+endsnippet
+
+snippet ir.value-tree_but_open---opens-window-on-click-in-a-tree
+<record model='ir.values' id="${1:id}">
+    <field name='key2'>tree_but_open</field>
+    <field name='model'>${6:model}</field>
+    <field name='name'>${7:Labe}</field>
+    <field name='value' eval="'ir.actions.${8:act_window}${9:report.xml},%d'%${20:action_id}"/>
+</record>
+endsnippet
+
+snippet ir.value-tree_but_action---executes-any-action-on-tree-click-(seldom-used)-
+<record model='ir.values' id="${1:id}">
+    <field name='key2'>tree_but_action</field>
+    <field name='model'>${6:model}</field>
+    <field name='name'>${7:Labe}</field>
+    <field name='value' eval="'ir.actions.${8:act_window}${9:report.xml},%d'%${20:action_id}"/>
+</record>
+endsnippet
+
+snippet ir.value-client_action_multi---executes-action-on-multiple-instances
+<record model='ir.values' id="${1:id}">
+    <field name='key2'>client_action_multi</field>
+    <field name='model'>${6:model}</field>
+    <field name='model_id' ref="model_${6/\./\_/g}" />
+    <field name='name'>${7:Labe}</field>
+    <field name='value' eval="'ir.actions.${8:act_window}${9:report.xml},%d'%${20:action_id}"/>
+    <field name='key'>action</field>
+</record>
+endsnippet
+
+snippet ir.value-client_print_multi---prints-report-on-multiple-instances
+<record model='ir.values' id="${1:id}">
+    <field name='key2'>${2:tree_but_open}${3:tree_but_action}${4:client_print_multi}${5:client_action_multi}</field>
+    <field name='model'>${6:model}</field>
+    <field name='name'>${7:Labe}</field>
+    <field name='value' eval="'ir.actions.${8:act_window}${9:report.xml},%d'%${20:action_id}"/>
+    <field name='object' eval="True" />
+    <field name='key'>action</field>
+</record>
+endsnippet
+
+snippet subtype "Subtype V11"
+<record id="${1:message_id}" model="mail.message.subtype">
+    <field name="res_model">${2:model}</field>
+    <field name="name">${3:technical_description}</field>
+    <field name="description">$3</field>
+	<field name="default" eval="True"></field>
+	<field name="internal" eval="False"></field>
+	<field name="hidden" eval="True"></field>
+</record>
+<template id="$1_template">
+
+</template>
+self.message_post_with_view("$1_template", values={'self': '...', 'param1': 'v1'}, subtype_id="$1")
+endsnippet
+
+snippet sec-Add-Group-to-menuitem
+<record model="ir.ui.menu" id="${1:menu_id}">
+    <field name="groups_id" eval="[(4, ref('${2:group_id}'))]" />
+</record>
+$0
+endsnippet
+
+snippet delmi
+<delete model="ir.ui.menu" id="${1:}" />
+$0
+endsnippet
+
+snippet implies
+<field name="implied_ids" eval="[[6, 0, [ref('$1')]]]" />$0
+endsnippet
+
+
+snippet odoowebsite "Main Menu"
+<template id="header" inherit_id="website.layout" name="Support Header Menu Link">
+    <xpath expr="//header//ul[@id='top_menu']/li" position="inside">
+        <li t-att-class="'' if website_sale_order and website_sale_order.cart_quantity else 'hidden'">
+            <a href="/support">
+                Support
+            </a>
+        </li>
+    </xpath>
+</template>
+endsnippet
+
+snippet assets-Frontend
+<!-- Front-end assets: custom css -->
+<template id="assets_frontend" inherit_id="website.assets_frontend" name="${2:MyIrgendwas}">
+	<xpath expr="." position="inside">
+		<link rel='stylesheet' href='/${1:module}/static/src/css/styles.css'/>
+		<script type="text/javascript" src="/${1:module}/static/src/js/treeview.js"/>
+	</xpath>
+</template>
+endsnippet
+
+snippet assets-Backend
+<template id="assets_backend" inherit_id="web.assets_backend" name="$1 Assets">
+	<xpath expr="." position="inside">
+		<link rel="stylesheet" href="/$1/static/src/css/styles.less"/>
+		<script type="text/javascript" src="/${1:module}/static/src/js/treeview.js"/>
+	</xpath>
+</template>
+endsnippet
+
+
+snippet act_Specific-view-for-window-action
+<record model="ir.actions.act_window.view" id="${1:}">
+	<field name="view_mode">${2:tree}${3:form}</field>
+	<field name="view_id" ref="${4:view_id}" />
+	<field name="act_window_id" ref="${5:id}" />
+	<field name="sequence">${6:sequence}</field>
+</record>
+
+better:
+<field name="view_ids" eval="
+  [(5, 0, 0),
+  (0, 0, {'view_mode': 'form', 'view_id': ref('swm_solar_crm.view_crm_lead_form')}),
+  (0, 0, {'view_mode': 'tree', 'view_id': ref('crm.crm_case_tree_view_leads')}),
+  (0, 0, {'view_mode': 'kanban', 'view_id': ref('crm.view_crm_lead_kanban')})]"/>
+endsnippet
+
+snippet href "Call action from kanban view"
+<a name="%(xmlid)d" type="action"><field name="name"/></a>
+endsnippet
+
+snippet email_template-record
+<record model="mail.template" id="${1}">
+	<field name="model_id" ref="${2}" />
+	<field name="name">${3}</field>
+	<field name="email_to">${ctx['email_to']}</field>
+	<field name="subject">${4}</field>
+	<field name="body_html">${5}</field>
+</record>
+endsnippet
+
+snippet email_template-record qweb (needs email_template_qweb)
+    <record model="mail.template" id="default_template">
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="name">Invoice Warning per Partner</field>
+      <field name="email_to">${ctx['email_to']}</field>
+      <field name="subject">
+          ${ctx.get('level', False) and ctx['level'].name or ''} f&#xFC;r Kundennummer ${object.property_account_receivable_id.code}
+      </field>
+      <field name="user_signature" eval="True"/>
+      <field name="body_type">qweb</field>
+      <field name="body_view_id" ref="warning_mail_template" />
+      <field name="body_html"></field>
+  </record>
+endsnippet
+
+snippet form_view_ref
+context={'form_view_ref': 'xmlid'}
+endsnippet
+
+snippet avg
+in py group_operator verwenden!
+endsnippet
+
+snippet update_user_groups_view
+<function id="res_groups_" model="res.groups" name="update_user_groups_view" eval="()"/>
+endsnippet
+
+snippet o2m_reload_on_button "Reloads complete form after button click"
+<field name="matching_partner_ids" options='{"reload_on_button": true}' context="{'lead_id': context['active_id']}">
+endsnippet
+
+snippet xmlid "oppor-form"
+crm.crm_case_form_view_oppor
+endsnippet
+
+snippet xmlid "lead-form"
+crm.crm_case_form_view_leads
+endsnippet
+
+snippet att
+<attribute name="$1">$2</attribute>
+endsnippet
+
+snippet field_width_in_percent
+<field name="street_name" style="width: 80%%"
+endsnippet
+
+snippet tree_create
+<tree create="0">
+endsnippet
+
+snippet tree_delete
+<tree delete="0">
+endsnippet
+
+snippet field-Style-inline
+options="{'style-inline': true}
+endsnippet
+
+snippet oe_edit_only
+class="oe_edit_only"
+endsnippet
+
+snippet no_create "no create at many2one"
+options="{'no_create': True}"
+endsnippet
+
+snippet button_box_toggle_bool_state
+<div class="oe_button_box" name="button_box">
+	<button name="toggle_active" type="object" groups="base.group_no_one"
+			class="oe_stat_button" icon="fa-archive">
+		<field name="active" widget="boolean_button"
+			options='{"terminology": "archive"}'/>
+	</button>
+</div>
+endsnippet
+
+snippet button_box_execute_action_button
+<button class="oe_stat_button" type="action" name="sale.act_res_partner_2_sale_order"
+	attrs="{'invisible': [('customer', '=', False)]}"
+	icon="fa-usd">
+	<span class="o_stat_value"><field string="Sales" name="sale_order_count" widget="statinfo"/></span>
+	<span class="o_stat_text"> Products</span>
+</button>
+endsnippet
+
+snippet report "Pivot"
+<?xml version="1.0"?>
+<odoo>
+  <data noupdate="0">
+    <record id="pivot1" model="ir.ui.view">
+      <field name="name">project.notes_with_time.report</field>
+      <field name="model">project.notes_with_time.report</field>
+      <field name="arch" type="xml">
+        <pivot string="Logged Time Analysis" disable_linking="True">
+          <field name="account_id" type="col"/>
+          <field name="date" interval="month" type="row"/>
+        </pivot>
+      </field>
+    </record>
+    <record id="pivot1_action" model="ir.actions.act_window">
+      <field name="name">Logged Time Analysis</field>
+      <field name="res_model">project.notes_with_time.report</field>
+      <field name="view_mode">pivot</field>
+      <field name="context">{}</field>
+      <field name="domain">[]</field>
+    </record>
+    <menuitem name="Logged Time" id="pivot1_menu" action="pivot1_action"/>
+  </data>
+</odoo>
+
+endsnippet
+
+snippet channel
+<record model="mail.channel" id="${1:id}">
+  <field name="channel_type">channel</field>
+  <field name="public">groups</field>
+  <field name="name">Master-Data</field>
+  <field name="group_public_id" ref="base.group_user"/>
+  <field name="group_ids" eval="[[4, ref('base.group_user')]]"/>
+</record>
+endsnippet
+
+snippet ir.filter
+<record id="filter_invoice_country" model="ir.filters">
+	<field name="name">By Country</field>
+	<field name="model_id">account.invoice.report</field>
+	<field name="domain">[]</field>
+	<field name="user_id" eval="False"/>
+	<field name="context">{'group_by': ['date:month', 'country_id']}</field>
+</record>
+endsnippet
+
+snippet act-URL-Action
+<record id="$1" model="ir.actions.act_url">
+  <field name="name">R2</field>
+  <field name="target">self</field>
+  <field name="url">/web</field>
+</record>
+endsnippet
+
+snippet qweb-format-date-V11
+<t t-esc="${1:expression}" t-options='{"widget": "date", "format": "d.M.y H:m:s"}'/>
+endsnippet
+
+snippet qweb-format-monetary-V11
+<t t-esc="${1:expression}" t-options="{'widget': 'monetary', 'display_currency': ${2:field_currency}}"/>
+endsnippet
+
+snippet menu "Web Icon"
+<record model="ir.ui.menu" id="root">
+	<field name="web_icon">contracts,static/contracts.png</field>
+</record>
+endsnippet
+
+snippet qweb-dynamic-t-call
+<t t-call="{{variable}}"/>
+endsnippet
+
+snippet qweb-t-raw
+<t t-call="..." r-raw="0"/>
+endsnippet
+
+snippet column_invisible
+<field name="picking_textual_state" attrs="{'column_invisible': [('parent.state', 'not in', ['done', 'cancel', 'draft'])]}"/>
+endsnippet
+
+snippet track_subtype
+@api.multi
+def _track_subtype(self, init_values):
+	self.ensure_one()
+	if 'state' in init_values and self.state == 'sale':
+		return 'custom_invoice.mt_invoices_confirmed'
+	return super(SaleOrder, self)._track_subtype(init_values)
+endsnippet
+
+snippet ribbon
+<widget name="web_ribbon" title="Complaint" bg_color="bg-danger" attrs="{'invisible': [('complaint', '=', False)]}"/>
+endsnippet
+
+
+snippet many2many_tags
+widget="many2many_tags" options="{'color_field': 'color'}"
+endsnippet

@@ -1,0 +1,45 @@
+snippet useradd
+# user dashboard
+RUN useradd -ms /bin/bash dashboard
+endsnippet
+
+
+snippet chpasswd
+RUN echo "${1:user}:${2:password}"|chpasswd
+endsnippet
+
+snippet remove-apt
+# autoremove and forbid further packages
+USER root
+RUN  rm -rf /var/lib/apt/lists/* wkhtmltox.deb
+endsnippet
+
+snippet timezone
+ENV TZ=Europe/Berlin
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo "$TZ" > /etc/timezone
+endsnippet
+
+snippet entrypoint
+???
+entrypoint: /bin/bash -c "/bin/bash -c \"$${@}\""
+
+# so machen, ansonsten werden parameter nicht uebergeben
+ENTRYPOINT ['/myscript.sh']
+
+endsnippet
+
+snippet locales_ubuntu
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y locales \
+    && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && dpkg-reconfigure --frontend=noninteractive locales \
+    && update-locale LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8 
+ENV LC_ALL en_US.UTF-8
+endsnippet
+
+
+snippet create_system_user
+RUN useradd -rm /bin/bash -d ${2:dir}-g root -G sudo -u ${1:uid} ${0:username}
+USER ${0}
+endsnippet

@@ -1,0 +1,703 @@
+#
+# JavaScript versions -- from the TextMate bundle + some additions
+# for jasmine-jquery matchers
+#
+extends javascript
+
+snippet d
+debugger;
+endsnippet
+
+
+extends javascript
+
+snippet webix.message
+webix.message("Selected: "+this.getItem(id).value)
+endsnippet
+
+extends javascript
+
+snippet rpc "Free"
+self.rpc({
+    url: '/web/${1}',
+    async: false
+}, {
+}, function(result) {
+
+});
+
+endsnippet
+
+snippet ko
+ko.observable()${0}
+endsnippet
+
+snippet koa
+ko.observableArray()${0}
+endsnippet
+
+snippet form
+//shows a form in a popup window of the given entity
+var model = '${1:model}';
+var context = this.dataset.get_context();
+var pop = new openerp.web.form.FormOpenPopup(this);
+pop.show_element(model, null, context, {
+    title: 'New',
+    disable_multiple_selection: true,
+    view_id: false,
+    res_model: model,
+});
+pop.on('closed', self, function() {
+    if (!something_saved) {
+    }
+});
+pop.on('create_completed', self, function(id) {
+    something_saved = true;
+    ${0}
+});
+endsnippet
+
+snippet handled "Handled RPC error"
+fail.code = 200; //managed error
+fail.type = "heading";
+fail.data = 'bodytext';
+ev.preventDefault(); //parameter fail und event verwenden
+endsnippet
+
+snippet handled "8.0/9.0"
+.fail(function(result, ev) {
+	ev.preventDefault(); //parameter fail und event verwenden
+});
+endsnippet
+
+snippet user_menu "Adds a button to top right user menu"
+
+odoo.define("phonebox.start_call", function(require) {
+
+	var systray = require('web.SystrayMenu');
+	var Widget = require('web.Widget');
+	var core = require('web.core');
+	var qweb = core.qweb;
+	var OperatorDialog = require('phonebox.operators.dialog');
+	var _t = core._t;
+	var session = require('web.session');
+    var rpc = require('web.rpc');
+
+	var StartCall = Widget.extend({
+		template: 'phonebox.internal-call-button-in-systray',
+
+		events: {
+			'click a': 'clicked',
+		},
+		//entdeckt, wie man wohl richtig events bei vererbung erweitert
+		events: _.extend({}, rootWidget.RootWidget.prototype.events || {}, {
+			'click [data-action]': '_onActionMenuClick',
+			'mouseover > ul > li.dropdown:not(.open)': '_onMenuHovered',
+			'click .o_mobile_menu_toggle': '_onMobileMenuToggleClick',
+		}),
+		init: function() {
+			this._super.apply(this, arguments);
+		},
+		on_dnd_update: function(dnd) {
+			this.set('dnd', dnd);
+			this.update_display();
+		},
+		update_display: function() {
+			if (this.dnd) {
+				this.$el.css('color', blue);
+			}
+			else {
+				this.$el.css('color', yellow);
+			}
+		},
+		clicked: function() {
+			if (this.$dlg) {
+				return;
+			}
+			var self = this;
+
+			this.$dlg = new OperatorDialog(this);
+			this.$dlg.showModal().done($.proxy(function(operator) {
+				if (!operator) {
+					return;
+				}
+				rpc.query({
+                    route: "/phonebox/call",
+                    params: {
+                        number: operator.number
+                    }
+                }).done(function() {
+					self.$dlg = null;
+				}).fail(function(fail, ev) {
+					alert("failed");
+					ev.preventDefault();
+					self.$dlg = null;
+				});
+			}, this)).fail($.proxy(function() {
+				this.$dlg = null;
+			}, this));
+		},
+	});
+
+	systray.Items.push(StartCall);
+
+});
+endsnippet
+
+snippet clientaction_define "13.0"
+// First of all, import the things we need here.
+var core = require('web.core');
+var AbstractAction = require('web.AbstractAction');
+var QWeb = core.qweb;
+var _t = core._t;
+var rpc = require("web.rpc");
+
+//Extend the AbstractAction and include our custom defined widget.
+var $1 = AbstractAction.extend({
+	template: "......",
+	title: core._t("New Dialog"),
+	//This is where the widget is initialized
+	init: function(parent, action, options) {
+		this._super.apply(this, arguments);
+	},
+	events: {
+		//Include events such as click, change, here
+	},
+	willStart: function () {
+        res = this._super.apply(this, arguments);
+		return newPromise(function(resolve) {
+			res.then(function() {
+				resolve();
+			});
+		});
+	},
+});
+//Add the custom defined widget to registry.
+core.action_registry.add('new_test_model_client', $1);
+return $1;
+
+
+
+endsnippet
+
+snippet clientaction_call "do client action"
+var web_client = require('web.web_client');
+web_client.do_action({
+	type:'ir.actions.client',
+	tag: 'mailbox.mailbox',
+	params: {
+		email_id: res_id,
+	},
+});
+endsnippet
+
+snippet query
+(new Model("calendar.contacts")).query(["partner_id"]).filter([["user_id", "=",self.dataset.context.uid]]).all().then(function(result) {
+endsnippet
+
+snippet kof
+self.$1 = ko.observable();
+$0
+endsnippet
+
+snippet popup
+//shows a form in a popup window of the given entity
+var model = 'base.company_switch';
+var context = {'called_by_shortcut': true};
+var pop = new openerp.web.form.FormOpenPopup(this);
+pop.show_element(model, null, context, {
+	title: 'New',
+	disable_multiple_selection: true,
+	view_id: false,
+	res_model: model,
+	initial_mode': 'edit/view',
+});
+pop.on('closed', self, function() {
+	alert('closed');
+});
+pop.on('create_completed', self, function(id) {
+	alert('completed');
+});
+endsnippet
+
+snippet widget "widget 13.0"
+odoo.define("source_code_viewer", function(require) {
+
+    var AbstractField = require('web.AbstractField');
+    var core = require('web.core');
+    var QWeb = require('web.QWeb');
+    var field_registry = require('web.field_registry');
+
+    //override existing
+    var SourceCodeViewer = AbstractField.extend({
+        template: 'source_code_viewer',
+        init: function() {
+            this._super.apply(this, arguments);
+        },
+        destroy: function() {
+            this._super.apply(this, arguments);
+        },
+        start: function() {
+            return this._super.apply(this, arguments);
+        },
+        _render: function() {
+            this._super.apply(this, arguments);
+            this.$el.html("test123");
+        },
+    });
+    field_registry.add('source_code_viewer', SourceCodeViewer); // as form widget
+    return SourceCodeViewer;
+
+});
+endsnippet
+
+snippet super
+this._super.apply(this, arguments);
+
+endsnippet
+
+snippet require "typical requires"
+var core = require('web.core');
+var _t = core._t;
+var Widget = require('web.Widget');
+var qweb = require("qweb");
+var Model = require('web.DataModel');
+var webclient = require('web.web_client');
+var Session = require('web.Session');
+var session = require('web.session');
+var WebClient = require('web.WebClient');
+var data = require('web.data');
+
+var CompoundDomain = data.CompoundDomain;
+endsnippet
+
+snippet require "typical requires 11"
+var core = require('web.core');
+var _t = core._t;
+var Widget = require('web.Widget');
+var qweb = require("web.core").qweb;
+var Model = require('web.DataModel');
+var webclient = require('web.web_client');
+var Session = require('web.Session');
+var session = require('web.session');
+var WebClient = require('web.WebClient');
+var data = require('web.data');
+
+var CompoundDomain = data.CompoundDomain;
+endsnippet
+
+snippet do_action "9.0 11.0"
+var webclient = require('web.web_client');  // instantiated web.WebClient
+var options = {
+	clear_breadcrumbs: false,
+	on_reverse_breadcrumb: function() {},
+	hide_breadcrumb: false,
+	on_close: function() {},
+	action_menu_id: null,
+	additional_context: {},
+};
+webclient.action_manager.do_action({
+	type: 'ir.actions.act_window',
+	res_model: model,
+	res_id: id,
+	view_type: 'form',
+	view_mode: 'form',
+	views: [[false, 'form']],
+	target: 'new',
+	context: {
+		'default_running_phonecall': self.id,
+	},
+	flags: {'form': {'action_buttons': true}},
+}, options);
+
+endsnippet
+
+snippet topmenu "systray topmenu"
+var systray = require('web.SystrayMenu');
+var Widget = require('web.Widget');
+var core = require('web.core');
+var _t = core._t;
+
+var PhoneState = Widget.extend({
+	template: 'ari.phonestate',
+	events: {
+		'click a.fa-volume-off': 'turnon',
+		'click a.fa-phone': 'turnoff',
+	},
+	start: function() {
+		var result = this._super.apply(this, arguments);
+		var dfd = $.Deferred();
+		this.get_state().done($.proxy(function(state) {
+			this.update_display();
+			result.done(function() {
+				dfd.resolve();
+			}).fail(function() {
+				dfd.reject();
+			});
+		}, this)).fail(function() {
+			dfd.reject();
+		});
+
+		setInterval($.proxy(function() {
+			this.get_state().done($.proxy(function(state) {
+				this.update_display();
+			}, this));
+
+		}, this), 10000);
+		return dfd.promise();
+	},
+	get_state: function() {
+		var dfd = $.Deferred();
+		this.rpc("/ari/blocked").done($.proxy(function(result) {
+			this.blocked = result.block;
+			dfd.resolve(result.block);
+		}, this)).fail(function() {
+			dfd.reject();
+		});
+		return dfd.promise();
+	},
+	turnon: function() {
+		this.rpc("/ari/unblock").done($.proxy(function(result) {
+			this.blocked = false;
+			this.update_display();
+		}, this));
+	},
+	turnoff: function() {
+		this.rpc("/ari/block").done($.proxy(function(result) {
+			this.blocked = true;
+			this.update_display();
+		}, this));
+	},
+	update_display: function() {
+		if (this.blocked)  {
+			this.$off.css("display", "block");
+			this.$on.hide();
+		}
+		else {
+			this.$off.hide();
+			this.$on.css("display", "block");
+		}
+	},
+	renderElement: function() {
+		this._super.apply(this, arguments);
+		this.$off = this.$el.find(".fa-volume-off");
+		this.$on = this.$el.find(".fa-phone");
+		this.update_display();
+	},
+});
+
+systray.Items.push(PhoneState);
+endsnippet
+
+snippet formwidget "Override V9 form widget"
+odoo.define("$1", function(require) {
+	var core = require('web.core');
+	var Widget = require('web.Widget');
+	var form_common = require('web.form_common');
+	var field = core.form_widget_registry.get('${2:one2many}');
+	var qweb = core.qweb;
+
+	var MyWidget = field.extend({
+	var TreeWidget = form_common.AbstractField.extend(form_common.CompletionFieldMixin, form_common.ReinitializeFieldMixin, {
+		template: '.....',
+	});
+
+	core.form_widget_registry.add('${3:widget-name-in-forms}', MyWidget);
+});
+endsnippet
+
+snippet bus "bus notification"
+var bus = require('bus.bus').bus;   //is global, only on bus
+
+//remark
+bus.is_odoo_focused()  // NICHT is_master
+
+//hier noch die phone nummer einbauen?
+bus.add_channel([session.db, 'phonebox.blocked', session.uid].join());
+function on_notification(notifications) {
+}
+bus.on('notification', null, on_notification);
+bus.on("window_focus", null, function() {
+	web_client.set_title_part("_incoming_call");
+});
+
+bus.start_polling();
+// use explicit string formatting, otherwise u"asd" instead of "asd"
+//self.env['bus.bus'].sendone(','.join(str(x) for x in [self._cr.dbname, 'res.partner', self.env.user.partner_id.id]), notification)
+endsnippet
+
+snippet onchange "backbone 7.0"
+this.getParent().on('change:total_amount', this, this.update);
+endsnippet
+
+snippet dialog "alert 9.0"
+Dialog.alert(self OR null, 'confirm text', { confirm_callback: self.on_confirmed })
+endsnippet
+
+snippet dialog "confirm 9.0"
+Dialog.confirm(self OR null, 'confirm text', { confirm_callback: self.on_confirmed, cancel_callback: ... });
+endsnippet
+
+snippet dialog "custom content"
+odoo.define("${1:mydialog}", function(require) {
+    var core = require("web.core");
+    var qweb = core.qweb;
+    var Widget = require('web.Widget');
+    var Dialog = require('web.Dialog');
+    var Datamodel = require("web.DataModel");
+    var _t = core._t;
+
+    // static method to open simple confirm dialog
+    var dialog = function (owner, ${2:myparams}) {
+        var dfd = $.Deferred();
+        var dlg = null;
+        var $content = $(qweb.render("${3:mytemplate}", ${4:mytemplateparams}));
+        var options = {
+            confirm_callback: function() {
+				${5:define how to return a value};
+                var val = $content.find("select").val();
+                if (!val) {
+                    dfd.reject();
+                }
+                else {
+                    val = Number(val);
+                    dfd.resolve(val);
+                }
+            },
+            cancel_callback: function() {
+                dfd.reject();
+            },
+        };
+        var buttons = [
+            {
+                text: _t("Ok"),
+                classes: 'btn-primary',
+                close: true,
+                click: options && options.confirm_callback
+            },
+            {
+                text: _t("Cancel"),
+                close: true,
+                click: options && options.cancel_callback
+            }
+        ];
+
+
+		var dialog_options = _.extend({
+			size: 'medium',
+			buttons: buttons,
+			$content: $content,
+			title: _t("Confirmation"),
+		});
+
+		dlg = new Dialog(owner, dialog_options, options).open();
+
+        return dfd;
+    };
+    return dialog;
+
+});
+endsnippet
+
+snippet mutex
+var utils = require('web.utils');
+this.mutex = new utils.Mutex();
+...
+this.mutex.exec(function() {
+	//any code you want
+	//INTERESSANT liefert das return hier wirklich fuer uebergeordnete
+	//Funktion das Ergebnis zurueck?
+	return self._check_email_popup(values);
+});
+endsnippet
+
+snippet chatter "add field to message wall message"
+var chatManager = require('mail.chat_manager');
+
+var oldmakemsg = chatManager.make_message;
+function make_message(data) {
+	var result = oldmakemsg(data);
+	result.sent = data.sent;
+	result.sent_date = data.sent_date ? data.sent_date : 'no date available';
+	result.sent_from = data.sent_from;
+	result.sent_to = data.sent_to;
+	result.sent_cc = data.sent_cc;
+	result.is_outgoing = data.is_outgoing;
+	return result;
+};
+chatManager.make_message = make_message;
+endsnippet
+
+snippet frontend_dialog
+var Dialog = require('web.Dialog');
+Dialog.alert(this, "Hello, world!");
+endsnippet
+
+snippet cal_sidebar "Calendar Sidebar Filter Option"
+odoo.define("followup.calendar_extension", function(require) {
+"use strict";
+
+    var Dialog = require('web.Dialog');
+    var CalendarView = require('web_calendar.CalendarView');
+    var core = require('web.core');
+    var _t = core._t;
+    var data = require('web.data');
+    var CompoundDomain = data.CompoundDomain;
+
+    CalendarView.include({
+        view_loading: function(r) {
+            var self = this;
+            this.$el.on('click', '.o_filter_to_oppors', function() {
+                self.$calendar.fullCalendar('refetchEvents');
+            });
+            return this._super(r);
+        },
+        get_range_domain: function() {
+            debugger;
+            var result = this._super.apply(this, arguments);
+            if (this.dataset.model === "calendar.event") {
+                if (!this.$checkbox_only_current_opportunity .prop('checked')) {
+                    result.add([['followup', '=', false]]);
+                }
+            };
+            return result;
+        },
+        extraSideBar: function() {
+            var self = this;
+            var result = this._super();
+            debugger;
+            this.$checkbox_only_current_opportunity = $();
+            if (this.dataset.model === "calendar.event") {
+                return result.then(function() {
+                    self.$checkbox_show_followup = $('<input />', {type: 'checkbox', checked: 'checked'})
+                                        .addClass('o_filter_to_oppors')
+                                        .prependTo(self.$('.o_calendar_filter'));
+                    $("<span />", {class: "followup_filter", html: _t("Filter to Opportunity Meetings")}).insertAfter(self.$checkbox_show_followup);
+                });
+            }
+            return result;
+        },
+    });
+});
+endsnippet
+
+snippet Many2oneWidgetInJsXml "Add a many2one widget to any html"
+var FieldMany2One = core.form_widget_registry.get('many2one');
+this.ir_model_m2o = new FieldMany2One(self.dfm, {
+	attrs: {
+		class: 'o_add_favorite_calendar',
+		name: "partner_id",
+		type: "many2one",
+		options: '{"no_open": True}',
+		placeholder: _t("Add Favorite Calendar"),
+	},
+});
+this.ir_model_m2o.appendTo(this.$el);
+this.ir_model_m2o.on('change:value', self, function() {
+	// once selected, we reset the value to false.
+	if (self.ir_model_m2o.get_value()) {
+		self.add_filter();
+	}
+});
+endsnippet
+
+snippet has_group
+self.session.user_has_group('base.group_external_user').done(function(has_group) {
+});
+endsnippet
+
+snippet view "View inherits Kanban-View for making a dashboard"
+var core = require('web.core');
+var formats = require('web.formats');
+var Model = require('web.Model');
+var session = require('web.session');
+var KanbanView = require('web_kanban.KanbanView');
+var Widget = require('web.Widget');
+var View = require('web.View');
+var REFRESH = 60000;
+var webclient = require('web.web_client');  // instantiated web.WebClient
+
+var QWeb = core.qweb;
+
+var _t = core._t;
+var _lt = core._lt;
+
+var ${1:Followup}DashboardView = KanbanView.extend({
+	display_name: _lt('$2'),
+	icon: 'fa-dashboard',
+	view_type: "${3:followup_dashboard}",
+	searchview_hidden: true,
+	templaet: "$3",
+
+	init: function() {
+		this._super.apply(this, arguments);
+	},
+	renderElement: function() {
+		this._super.apply(this, arguments);
+	},
+});
+
+QWeb Template:
+
+	<div t-name="followup_dashboard" class="o_kanban_view o_salesteam_kanban o_kanban_dashboard">
+		<div class='followup-dashboard o_sales_dashboard'>
+
+		</div>
+	</div>
+
+Evtl hinzufuegen (wird gebraucht, wenn dashboard die erste Ansicht aus menue heraus ist)
+
+    @api.model
+    def _get_default_$3_view(self):
+        return etree.XML("<$3 />")
+
+core.view_registry.add('$3', $1DashboardView);
+return $1DashboardView;
+endsnippet
+
+snippet FormViewDialog "FormViewDialog: show view as dialog"
+var dialog = new form_common.FormViewDialog(this, {
+	res_model: this.dataset.model,
+	res_id: parseInt(id).toString() == id ? parseInt(id) : id,
+	context: this.dataset.get_context(),
+	title: title,
+	view_id: +this.open_popup_action,
+	readonly: true,
+	buttons: [
+		{text: _t("Edit"), classes: 'btn-primary', close: true, click: function() {
+			self.dataset.index = self.dataset.get_id_index(id);
+			self.do_switch_view('form', null, { mode: "edit" });
+		}},
+
+		{text: _t("Delete"), close: true, click: function() {
+			self.remove_event(id);
+		}},
+
+		{text: _t("Close"), close: true}
+	]
+}).open();
+endsnippet
+
+snippet rpc "rpc any method (route)"
+self._rpc({
+		route: "/web/action/load",
+		params: {
+			action_id: "base.action_res_users_my",
+		},
+	})
+	.done(function (result) {
+		result.res_id = session.uid;
+		self.do_action(result);
+	});
+endsnippet
+
+snippet rpc "rpc method"
+this._rpc({
+                model: filter.write_model,
+                method: 'search_read',
+                domain: [["user_id", "=", session.uid]],
+                fields: [filter.write_field],
+            })
+            .then(function (res) {
+endsnippet
+
