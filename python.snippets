@@ -13,6 +13,774 @@ assert "No results found." not in driver.page_source
 driver.close()
 endsnippet
 
+snippet import_connector_dict
+from odoo.addons.connector_common import CIOrderedDict
+endsnippet
+snippet pudb
+import pudb;pudb.set_trace()
+endsnippet
+
+snippet vim
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+endsnippet
+
+snippet T
+True
+endsnippet
+
+snippet F
+False
+endsnippet
+
+snippet lxml
+# cheatsheet lxml
+from lxml import etree
+doc = etree.XML(string)
+xml = etree.tostring(doc)
+subnode = etree.SubElement(parentnode, tagname, {'attrib1': value1})
+node.set("attrib", value)
+node.pop("attrib")
+value = node.get("attrib")
+node.getparent().remove(subnode)
+endsnippet
+
+snippet unicodedecode
+a = a_string.encode("ascii", "xmlcharrefreplace")
+# a: "HEINE&#160;mini 3000&#174; Dermatoscope "
+endsnippet
+
+snippet #!
+#!/usr/bin/python
+endsnippet
+
+snippet remove_whitespace
+import string
+$1 = $1.translate(None, string.punctuation + string.whitespace)
+endsnippet
+
+snippet b64decode
+base64.b64decode($1)$0
+endsnippet
+
+snippet b64encode
+base64.b64encode($1)$0
+endsnippet
+
+snippet b64encode "b64encode python3"
+base64.encodestring($1)$0
+endsnippet
+
+snippet ni
+raise Exception("not implemented")
+endsnippet
+
+snippet tempfile
+file = tempfile.mktemp(suffix='.${1:}')
+# no create
+filepath = Path(tempfile._get_default_tempdir()) / next(tempfile._get_candidate_names())
+$1
+endsnippet
+
+snippet __all__
+import os
+import glob
+__all__ = [ os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__)+"/*.py")]
+endsnippet
+
+snippet profile
+from functools import wraps
+PROF_DATA = {}
+PROF=True
+def removeNonAscii(s):
+	if not s:
+		return ""
+	return "".join(i for i in s if ord(i)<128)
+
+def print_prof_data():
+	if PROF:
+		print "##########################################"
+		import numpy
+		for fname, data in PROF_DATA.items():
+			max_time = numpy.max(data[1])
+			avg_time = numpy.average(data[1])
+			total_time = numpy.sum(data[1])
+			print "Function %s called %d times. " % (fname, data[0]),
+			print 'Execution time max: %.3f, average: %.3f, total: %.3f' % (max_time, avg_time, total_time)
+		print "##########################################"
+
+
+def profile(fn):
+	@wraps(fn)
+	def with_profiling(*args, **kwargs):
+		import time
+		start_time = time.time()
+		ret = fn(*args, **kwargs)
+		elapsed_time = float(time.time() - start_time)
+		if fn.__name__ not in PROF_DATA:
+			PROF_DATA[fn.__name__] = [0, []]
+		PROF_DATA[fn.__name__][0] += 1
+		PROF_DATA[fn.__name__][1].append(elapsed_time)
+
+		return ret
+	return with_profiling
+
+	def __init__(self, getter):
+		pass
+
+def clear_prof_data():
+	global PROF_DATA
+	PROF_DATA = {}
+endsnippet
+
+snippet re "findall"
+import re
+re.findall(r'\d+', text)
+endsnippet
+
+snippet current_dir
+import inspect
+import os
+from pathlib import Path
+current_dir = Path(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+endsnippet
+
+snippet doc
+"""
+${1}
+
+Arguments:
+${2} -- ${3}
+
+Returns:
+${4}
+"""
+
+endsnippet
+
+snippet argparse
+parser = argparse.ArgumentParser(description='Interface Products for website.')
+parser.add_argument('--h', metavar="host", type=str, help='openerp host', required=True)
+parser.add_argument('--reboot', action="store_true")
+parser.add_argument('--no-reboot', action="store_false")
+args = parser.parse_args()
+endsnippet
+
+snippet argparse "argparse - wohl zu praeferieren"
+from optparse import OptionParser
+from ConfigParser import SafeConfigParser
+
+config = SafeConfigParser()
+parser = OptionParser(
+    description='Migrate script for the impatient or lazy. '
+    'Makes a copy of your database, downloads the files necessary to migrate '
+    'it as requested and runs the migration on the copy (so your original '
+    'database will not be touched). While the migration is running only '
+    'errors are shown, for a detailed log see ${branch-dir}/migration.log')
+parser.add_option(
+    "-C", "--config", action="store", type="string",
+    dest="config",
+    help="current openerp config (required)")
+parser.add_option(
+    "-D", "--database", action="store", type="string",
+    dest="database",
+    help="current openerp database (required if not given in config)")
+parser.add_option(
+    "-B", "--branch-dir", action="store", type="string",
+    dest="branch_dir",
+    help="the directory to download openupgrade-server code to [%default]",
+    default='/var/tmp/openupgrade')
+parser.add_option(
+    "-R", "--run-migrations", action="store", type="string",
+    dest="migrations",
+    help="comma separated list of migrations to run, ie. \"" +
+    ','.join(sorted([a for a in migrations])) +
+    "\" (required)")
+parser.add_option(
+    "-A", "--add", action="store", type="string", dest="add",
+    help="load a python module that declares a dict "
+    "'migrations' which is merged with the one of this script "
+    "(see the source for details). You also can pass a string "
+    "that evaluates to a dict. For the banking addons, pass "
+    "\"{'6.1': {'addons': {'banking': 'lp:banking-addons/6.1'}}}\"")
+parser.add_option("-I", "--inplace", action="store_true", dest="inplace",
+                  help="don't copy database before attempting upgrade "
+                  "(dangerous)")
+parser.add_option(
+    "-F", "--force-deps", action="store", dest="force_deps",
+    help="force dependencies from a dict of the form \"{'module_name': "
+    "['new_dependency1', 'new_dependency2']}\"")
+(options, args) = parser.parse_args()
+
+if not options.config or not options.migrations\
+        or not reduce(lambda a, b: a and (b in migrations),
+                      options.migrations.split(','),
+                      True):
+    parser.print_help()
+    sys.exit()
+
+config.read(options.config)
+endsnippet
+
+snippet logging_many_options
+import logging
+from logging.handlers import RotatingFileHandler
+
+FORMAT = '[%(levelname)s] %(name) -12s %(asctime)s %(message)s'
+logging.basicConfig(filename="/dev/null", format=FORMAT)
+logging.getLogger().setLevel(logging.DEBUG)
+root_logger = logging.getLogger('')  # root handler
+formatter = logging.Formatter(FORMAT)
+
+rh = RotatingFileHandler(maxBytes=200 * 1024, filename='/var/log/spc_errors.log')
+rh.setFormatter(formatter)
+rh.setLevel(logging.ERROR)
+root_logger.addHandler(rh)
+
+rh = RotatingFileHandler(maxBytes=200 * 1024, filename='/var/log/spc_debug.log')
+rh.setLevel(logging.DEBUG)
+rh.setFormatter(formatter)
+root_logger.addHandler(rh)
+
+rh = RotatingFileHandler(maxBytes=20 * 1024, filename='/var/log/spc_info.log')
+rh.setLevel(logging.INFO)
+rh.setFormatter(formatter)
+root_logger.addHandler(rh)
+
+loggers = {
+    "MEM": logging.ERROR,
+    "xmlda": logging.DEBUG,
+    "SPC": logging.ERROR,
+    "SCI": logging.ERROR,
+    "Idle": logging.ERROR,
+    "PlanAktiv": logging.ERROR,
+    "BLINK": logging.ERROR,
+}
+for logger in loggers:
+    logging.getLogger(logger).setLevel(loggers[logger])
+endsnippet
+
+snippet slug
+def slug(o):
+	if not o:
+		return False
+	try:
+		return o[0]
+	except:
+		return o
+endsnippet
+
+snippet logging_minimal_stdout "Minimal to stdout"
+FORMAT = '[%(levelname)s] %(name) -12s %(asctime)s %(message)s'
+logging.basicConfig(format=FORMAT)
+logging.getLogger().setLevel(logging.DEBUG)
+logger = logging.getLogger('')  # root handler
+endsnippet
+
+snippet decorator
+from functools import wraps
+
+def mydecorator(f):
+from functools import wraps
+
+def mydecorator(f):
+	@wraps(f)
+	def wrapped(*args, **kwargs):
+		print "Before decorated function"
+		r = f(*args, **kwargs)
+		print "After decorated function"
+		return r
+	return wrapped
+endsnippet
+
+snippet ipy
+from IPython import embed; embed()
+endsnippet
+
+snippet xlrd
+from xlrd import open_workbook
+file_content = base64.b64decode(me.file)
+wb = open_workbook(file_contents=file_content)
+sheet = wb.sheets()[0]
+
+for i in range(sheet.nrows):
+	try:
+		row = sheet.row_values(i)
+	except:
+		break
+endsnippet
+
+snippet tz "make date not naiv"
+from dateutil import tz
+tz.gettz(...) # verwenden, ansonsten kommt bei Europe/Berlin nach pytz 2014.3 LMT raus (53 Minuten)
+arrow.get(d).replace(tzinfo=tz.gettz("Europe/Berlin"))
+# localize makes naiv to non naiv; date not changed: DONT USE REPLACE!!!! http://stackoverflow.com/questions/24359540/why-doesnt-pytz-localize-produce-a-datetime-object-with-tzinfo-matching-the-t
+d1 = pytz.timezone('Europe/Berlin').localize(datetime.strptime(d1, "%Y-%m-%d %H:%M:%S")).astimezone(tz=pytz.utc)
+endsnippet
+
+snippet mako
+from mako.template import Template
+text = Template(context['invoice_name']).render(obj=me, year=context['year'])
+endsnippet
+
+snippet vimsettings
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+endsnippet
+
+snippet stdout
+devnull = open(os.devnull, 'wb')
+check_call(('tar', 'xf', filepath), stdout=devnull)
+endsnippet
+
+snippet ctrlc
+import signal
+import sys
+def signal_handler(signal, frame):
+	print('You pressed Ctrl+C!')
+	sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+print('Press Ctrl+C')
+signal.pause()
+endsnippet
+
+snippet requests
+s = requests.Session()  # avoid keep alive
+r = s.get(url, timeout=3) # default 10 seconds
+r = requests.post(url, data=params)
+
+t.text[:300]
+
+endsnippet
+
+snippet caller-name
+inspect.stack()[1][3]
+endsnippet
+
+snippet PickledRedis
+
+import redis
+import pickle
+
+class PickledRedis(redis.StrictRedis):
+    def get(self, name):
+        pickled_value = super(PickledRedis, self).get(name)
+        if pickled_value is None:
+            return None
+        return pickle.loads(pickled_value)
+
+    def set(self, name, value, ex=None, px=None, nx=False, xx=False):
+        return super(PickledRedis, self).set(name, pickle.dumps(value), ex, px, nx, xx)
+endsnippet
+
+snippet hook_into_class
+
+def call_hook(cls):
+	def add_hook(_def):
+		defname = _def[0]
+		defcode = _def[1]
+		replaced_name = "____{}".format(defname)
+		print 'adding hook for {}'.format(defname)
+
+		def hook(self, *args, **kwargs):
+			print "Hooking into {}".format(defname)
+			result = defcode(self, *args, **kwargs)
+			print 'after method'
+			return result
+
+		try:
+			setattr(cls, defname, hook)
+			setattr(cls, replaced_name, defcode)
+		except (AttributeError, TypeError):
+			pass  # skip __name__ and __doc__ and the like
+	import inspect
+	defaultdefs = set(x[0] for x in inspect.getmembers(object, predicate=inspect.ismethod))
+	defs = inspect.getmembers(cls, predicate=inspect.ismethod)
+	for _def in defs:
+		if _def[0].startswith("__"):
+			continue
+		if _def[0] in defaultdefs:
+			continue
+		add_hook(_def)
+	return cls
+
+@call_hook
+class ANTONIA(object):
+	def a1(self, p1):
+		print 'hallo: {}'.format(p1)
+
+	def __init__(self):
+		self.started = datetime.now()
+		self.name = str(uuid.uuid4())
+endsnippet
+
+snippet allloggers
+for logger in logging.Logger.manager.loggerDict.keys():
+	logging.getLogger(logger).setLevel(logging.ERROR)
+endsnippet
+
+snippet excepthook
+def myexcepthook(exctype, value, traceback):
+    if exctype == KeyboardInterrupt:
+        os._exit(0)
+    else:
+        sys.__excepthook__(exctype, value, traceback)
+        logging.error(traceback)
+
+sys.excepthook = myexcepthook
+endsnippet
+
+snippet slice_array
+sliced_res_ids = [res_ids[i:i + batch_size] for i in range(0, len(res_ids), batch_size)]
+endsnippet
+
+snippet subprocess_read_pipe
+
+proc = subprocess.Popen(['/tmp/test.sh'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
+out = proc.stdout
+err = proc.stderr
+
+def reader(pipe, q):
+    try:
+        with pipe:
+            for line in iter(pipe.readline, ''):
+                q.put((pipe, line))
+    finally:
+        q.put(None)
+
+
+q = Queue()
+Thread(target=reader, args=[proc.stdout, q]).start()
+Thread(target=reader, args=[proc.stderr, q]).start()
+for source, line in iter(q.get, None):
+    if source == err:
+        logger.error(line)
+    else:
+        logger.info(line)
+
+proc.wait()
+
+endsnippet
+
+snippet iterfiles
+from itertools import chain
+result = (chain.from_iterable(glob(os.path.join(x[0], '*.tif')) for x in os.walk('.')))
+endsnippet
+
+snippet test "Unit Test"
+import unittest
+class Test(unittest.TestCase):
+	def setUp(self):
+		pass
+
+	def test_$1(self):
+
+		#self.assertTrue(...)
+		#self.assertEqual(..., ...)
+
+		pass
+
+if __name__ == '__main__':
+	unittest.main()
+endsnippet
+
+snippet logging_for_name "logger for __name__"
+logger = logging.getLogger(__name__)
+endsnippet
+
+snippet current_method_in_stack
+method_name = inspect.stack()[0][3]
+if method_name in [x[3] for x in inspect.stack()[1:]]:
+    return
+endsnippet
+
+snippet namemain
+if __name__ == '__main__':
+    $0
+endsnippet
+
+snippet cherryp
+import cherrypy
+from cherrypy.lib.static import serve_file
+import json
+import os
+
+
+# Author: Daniel Petermeier
+#
+# Monjerri is a HTTP Server based on cherrypy,
+# to provision SNOM Phones with VPN configurations and
+# configurations.
+
+# Published under IDC License.
+# Do what you want with it.
+
+# Usage: python3 monjerri.py
+
+# Requirements: - pip3 install cherrypy
+#               - users file containing a nested dictionary in json format: {"username":{"password":"abc1234","archivenr":"50","fts":"test50.tar"}}
+# Please be advised, to use Strong Passwords!
+# Other authentication methods are not supported by SNOM Phones
+
+# TODO: Implement anti-BruteForce-functionality
+# TODO: SSL Implementation possible with SNOM?
+
+class Provisioner(object):
+    default = "Welcome to the Provisioner!"
+    conf_path = "/root/config/provisioning_users.conf"
+    file_path = "/root/transfer"
+    users = {}
+
+    def read_conf(self):
+        if os.path.exists(self.conf_path):
+            with open(self.conf_path, "r") as f:
+                self.users = json.loads(f.read())
+
+    @cherrypy.expose
+    def index(self):
+        return self.default
+
+    @cherrypy.expose
+    def provision(self, u=None, p=None, x=None):
+        if not (u and p and x):
+            return self.default
+        self.read_conf()
+        try:
+            user = self.users[u]
+        except KeyError:
+            return self.default
+        if user["password"] == p and user["archivenr"] == x:
+
+            path = os.path.join(self.file_path, user["fts"])
+
+            if os.path.exists(path):
+                return serve_file(path, "application/x-gtar", "attachment")
+            else:
+                print("File Path not valid! {}".format(path))
+        else:
+            print("Params not valid! p={} ({}),  x={} ({})".format(p, user["password"], x, user["archivenr"]))
+        return self.default
+
+
+if __name__ == '__main__':
+    @cherrypy.tools.register('before_finalize', priority=60)
+    def secureheaders():
+        headers = cherrypy.response.headers
+        headers['X-Frame-Options'] = 'DENY'
+        headers['X-XSS-Protection'] = '1; mode=block'
+
+    conf = {
+        "global":
+        {
+                "server.socket_host": "0.0.0.0",
+                "server.socket_port": 8080,
+                "tools.staticdir.on": True,
+                "tools.staticdir.dir": "/root/transfer",
+        },
+        "/": {
+            "tools.sessions.on": True,
+            "tools.sessions.secure": True,
+            "tools.secureheaders.on": True,
+            "tools.encode.on": True,
+            "tools.encode.encoding": "utf-8"
+        },
+    }
+    cherrypy.quickstart(Provisioner(), "/", conf)
+endsnippet
+
+snippet graphviz
+import graphviz
+import pydot
+
+dot = pydot.Dot(graph_type='digraph')
+from pudb import set_trace
+set_trace()
+node1 = pydot.Node('mod1', style='filled', fillcolor='green')
+node2 = pydot.Node('Sir Bedevere the Wise')
+dot.add_node(node1)
+dot.add_node(node2)
+dot.add_edge(pydot.Edge(node1, node2))
+#dot.edges(('mod1', 'B'))
+#dot.render("/tmp/d.gv", view=True)
+
+from pudb import set_trace
+set_trace()
+dot.write_png('/tmp/test.png')
+endsnippet
+
+snippet ast "visitor example"
+import ast
+from pudb import set_trace
+set_trace()
+
+class v(ast.NodeVisitor):
+    def generic_visit(self, node):
+        print type(node).__name__
+        ast.NodeVisitor.generic_visit(self, node)
+
+x = v()
+t = ast.parse('toparse.py')
+x.visit(t)
+endsnippet
+
+snippet OrderedDict
+records.append(OrderedDict(sorted({
+    'Model': clazz.name,
+    'Field': field.name
+}.items(), key=lambda x: 1 if x[0] == 'Model' else 2)))
+endsnippet
+
+
+snippet md5chunked
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+endsnippet
+
+snippet isinstance_string
+isinstance($1, types.StringTypes)
+endsnippet
+
+snippet contextmanagerlib
+from contextlib import contextmanager
+
+@contextmanager
+def open_file(path, mode):
+    the_file = open(path, mode)
+    yield the_file
+    the_file.close()
+
+files = []
+
+for x in range(100000):
+    with open_file('foo.txt', 'w') as infile:
+        files.append(infile)
+
+for f in files:
+    if not f.closed:
+        print('not closed')
+endsnippet
+
+snippet contextmanagerdecorator
+from contextlib import ContextDecorator
+
+class makeparagraph(ContextDecorator):
+    def __enter__(self):
+        print('<p>')
+        return self
+
+    def __exit__(self, *exc):
+        print('</p>')
+        return False
+
+@makeparagraph()
+def emit_html():
+    print('Here is some non-HTML')
+
+emit_html()
+endsnippet
+
+snippet inquirer "inquirer choices"
+which = inquirer.prompt([inquirer.List('name', 'Choose', choices=hosts.keys())])
+endsnippet
+
+snippet chmodx "pathlib chmod+x"
+import stat
+${1:file}.chmod($1.stat().st_mode | stat.S_IEXEC)
+endsnippet
+
+snippet chunks
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+endsnippet
+
+snippet groupby
+from itertools import groupby
+for category, lines in groupby(self.order_line, lambda l: l.layout_category_id):
+endsnippet
+
+global !p
+def fraction(a, b):
+    try:
+        return "%.1f" % (float(a)/float(b))
+    except (ValueError, ZeroDivisionError):
+        return "ERR"
+endglobal
+
+snippet uuid
+`!p import uuid
+if not snip.c:
+    import os
+    snip.rv = str(uuid.uuid4())
+    snip.rv = snip.fn
+    snip.rv = os.getcwd()
+`
+endsnippet
+
+snippet jsonencode
+class StringEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return str(obj)
+
+json.dumps(data, cls=StringEncoder)
+endsnippet
+
+snippet bp
+breakpoint()
+endsnippet
+
+snippet trace
+import pudb
+pudb.set_trace()
+endsnippet
+
+snippet make-executable
+os.chmod(bin_autobot, os.stat(bin_autobot).st_mode | stat.S_IEXEC)
+endsnippet
+
+snippet pymongo
+from pymongo import MongoClient
+mongoclient = MongoClient(
+	os.environ["MONGO_HOST"],
+	int(os.environ['MONGO_PORT']),
+	username=os.environ['MONGO_USERNAME'],
+	password=os.environ['MONGO_PASSWORD'],
+	connectTimeoutMS=20000, socketTimeoutMS=20000, serverSelectionTimeoutMS=20000,
+)
+db = mongoclient.get_database('cicd_sites')
+
+db.fine_one({...})
+db.update_one({search}, {"$set": {}}, upsert=False)
+endsnippet
+
+snippet has_file_access
+if os.access(path, os.W_OK)
+endsnippet
+
+snippet trace
+trace = '\n'.join(traceback.format_stack())
+endsnippet
+
+snippet job-retry-error
+from odoo.addons.queue_job.exception import RetryableJobError
+endsnippet
+
+snippet rgetattr_rsetattr
+import functools
+
+def rsetattr(obj, attr, val):
+    pre, _, post = attr.rpartition('.')
+    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+def rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+    return functools.reduce(_getattr, [obj] + attr.split('.'))
+endsnippet
+
 snippet cpbefore_finalize
 @cherrypy.tools.register('before_finalize', priority=60)
 def secureheaders():
@@ -38,9 +806,6 @@ snippet groupby "Group By - Ausgabe normaler Dataframe, keine Indexspalten (anso
 df.groupby(fields_array, as_index=False)
 endsnippet
 
-snippet import_connector_dict
-from odoo.addons.connector_common import CIOrderedDict
-endsnippet
 extends python
 
 snippet unittest "V11"
@@ -1571,768 +2336,3 @@ def completion(execute):
         click.secho("\n\n" f"Insert into {rc_file}\n\n" f"echo '{line}' >> {rc_file}" "\n\n")
 
 endsnippet
-snippet pudb
-import pudb;pudb.set_trace()
-endsnippet
-
-snippet vim
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-endsnippet
-
-snippet T
-True
-endsnippet
-
-snippet F
-False
-endsnippet
-
-snippet lxml
-# cheatsheet lxml
-from lxml import etree
-doc = etree.XML(string)
-xml = etree.tostring(doc)
-subnode = etree.SubElement(parentnode, tagname, {'attrib1': value1})
-node.set("attrib", value)
-node.pop("attrib")
-value = node.get("attrib")
-node.getparent().remove(subnode)
-endsnippet
-
-snippet unicodedecode
-a = a_string.encode("ascii", "xmlcharrefreplace")
-# a: "HEINE&#160;mini 3000&#174; Dermatoscope "
-endsnippet
-
-snippet #!
-#!/usr/bin/python
-endsnippet
-
-snippet remove_whitespace
-import string
-$1 = $1.translate(None, string.punctuation + string.whitespace)
-endsnippet
-
-snippet b64decode
-base64.b64decode($1)$0
-endsnippet
-
-snippet b64encode
-base64.b64encode($1)$0
-endsnippet
-
-snippet b64encode "b64encode python3"
-base64.encodestring($1)$0
-endsnippet
-
-snippet ni
-raise Exception("not implemented")
-endsnippet
-
-snippet tempfile
-file = tempfile.mktemp(suffix='.${1:}')
-# no create
-filepath = Path(tempfile._get_default_tempdir()) / next(tempfile._get_candidate_names())
-$1
-endsnippet
-
-snippet __all__
-import os
-import glob
-__all__ = [ os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__)+"/*.py")]
-endsnippet
-
-snippet profile
-from functools import wraps
-PROF_DATA = {}
-PROF=True
-def removeNonAscii(s):
-	if not s:
-		return ""
-	return "".join(i for i in s if ord(i)<128)
-
-def print_prof_data():
-	if PROF:
-		print "##########################################"
-		import numpy
-		for fname, data in PROF_DATA.items():
-			max_time = numpy.max(data[1])
-			avg_time = numpy.average(data[1])
-			total_time = numpy.sum(data[1])
-			print "Function %s called %d times. " % (fname, data[0]),
-			print 'Execution time max: %.3f, average: %.3f, total: %.3f' % (max_time, avg_time, total_time)
-		print "##########################################"
-
-
-def profile(fn):
-	@wraps(fn)
-	def with_profiling(*args, **kwargs):
-		import time
-		start_time = time.time()
-		ret = fn(*args, **kwargs)
-		elapsed_time = float(time.time() - start_time)
-		if fn.__name__ not in PROF_DATA:
-			PROF_DATA[fn.__name__] = [0, []]
-		PROF_DATA[fn.__name__][0] += 1
-		PROF_DATA[fn.__name__][1].append(elapsed_time)
-
-		return ret
-	return with_profiling
-
-	def __init__(self, getter):
-		pass
-
-def clear_prof_data():
-	global PROF_DATA
-	PROF_DATA = {}
-endsnippet
-
-snippet re "findall"
-import re
-re.findall(r'\d+', text)
-endsnippet
-
-snippet current_dir
-import inspect
-import os
-from pathlib import Path
-current_dir = Path(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
-endsnippet
-
-snippet doc
-"""
-${1}
-
-Arguments:
-${2} -- ${3}
-
-Returns:
-${4}
-"""
-
-endsnippet
-
-snippet argparse
-parser = argparse.ArgumentParser(description='Interface Products for website.')
-parser.add_argument('--h', metavar="host", type=str, help='openerp host', required=True)
-parser.add_argument('--reboot', action="store_true")
-parser.add_argument('--no-reboot', action="store_false")
-args = parser.parse_args()
-endsnippet
-
-snippet argparse "argparse - wohl zu praeferieren"
-from optparse import OptionParser
-from ConfigParser import SafeConfigParser
-
-config = SafeConfigParser()
-parser = OptionParser(
-    description='Migrate script for the impatient or lazy. '
-    'Makes a copy of your database, downloads the files necessary to migrate '
-    'it as requested and runs the migration on the copy (so your original '
-    'database will not be touched). While the migration is running only '
-    'errors are shown, for a detailed log see ${branch-dir}/migration.log')
-parser.add_option(
-    "-C", "--config", action="store", type="string",
-    dest="config",
-    help="current openerp config (required)")
-parser.add_option(
-    "-D", "--database", action="store", type="string",
-    dest="database",
-    help="current openerp database (required if not given in config)")
-parser.add_option(
-    "-B", "--branch-dir", action="store", type="string",
-    dest="branch_dir",
-    help="the directory to download openupgrade-server code to [%default]",
-    default='/var/tmp/openupgrade')
-parser.add_option(
-    "-R", "--run-migrations", action="store", type="string",
-    dest="migrations",
-    help="comma separated list of migrations to run, ie. \"" +
-    ','.join(sorted([a for a in migrations])) +
-    "\" (required)")
-parser.add_option(
-    "-A", "--add", action="store", type="string", dest="add",
-    help="load a python module that declares a dict "
-    "'migrations' which is merged with the one of this script "
-    "(see the source for details). You also can pass a string "
-    "that evaluates to a dict. For the banking addons, pass "
-    "\"{'6.1': {'addons': {'banking': 'lp:banking-addons/6.1'}}}\"")
-parser.add_option("-I", "--inplace", action="store_true", dest="inplace",
-                  help="don't copy database before attempting upgrade "
-                  "(dangerous)")
-parser.add_option(
-    "-F", "--force-deps", action="store", dest="force_deps",
-    help="force dependencies from a dict of the form \"{'module_name': "
-    "['new_dependency1', 'new_dependency2']}\"")
-(options, args) = parser.parse_args()
-
-if not options.config or not options.migrations\
-        or not reduce(lambda a, b: a and (b in migrations),
-                      options.migrations.split(','),
-                      True):
-    parser.print_help()
-    sys.exit()
-
-config.read(options.config)
-endsnippet
-
-snippet logging_many_options
-import logging
-from logging.handlers import RotatingFileHandler
-
-FORMAT = '[%(levelname)s] %(name) -12s %(asctime)s %(message)s'
-logging.basicConfig(filename="/dev/null", format=FORMAT)
-logging.getLogger().setLevel(logging.DEBUG)
-root_logger = logging.getLogger('')  # root handler
-formatter = logging.Formatter(FORMAT)
-
-rh = RotatingFileHandler(maxBytes=200 * 1024, filename='/var/log/spc_errors.log')
-rh.setFormatter(formatter)
-rh.setLevel(logging.ERROR)
-root_logger.addHandler(rh)
-
-rh = RotatingFileHandler(maxBytes=200 * 1024, filename='/var/log/spc_debug.log')
-rh.setLevel(logging.DEBUG)
-rh.setFormatter(formatter)
-root_logger.addHandler(rh)
-
-rh = RotatingFileHandler(maxBytes=20 * 1024, filename='/var/log/spc_info.log')
-rh.setLevel(logging.INFO)
-rh.setFormatter(formatter)
-root_logger.addHandler(rh)
-
-loggers = {
-    "MEM": logging.ERROR,
-    "xmlda": logging.DEBUG,
-    "SPC": logging.ERROR,
-    "SCI": logging.ERROR,
-    "Idle": logging.ERROR,
-    "PlanAktiv": logging.ERROR,
-    "BLINK": logging.ERROR,
-}
-for logger in loggers:
-    logging.getLogger(logger).setLevel(loggers[logger])
-endsnippet
-
-snippet slug
-def slug(o):
-	if not o:
-		return False
-	try:
-		return o[0]
-	except:
-		return o
-endsnippet
-
-snippet logging_minimal_stdout "Minimal to stdout"
-FORMAT = '[%(levelname)s] %(name) -12s %(asctime)s %(message)s'
-logging.basicConfig(format=FORMAT)
-logging.getLogger().setLevel(logging.DEBUG)
-logger = logging.getLogger('')  # root handler
-endsnippet
-
-snippet decorator
-from functools import wraps
-
-def mydecorator(f):
-from functools import wraps
-
-def mydecorator(f):
-	@wraps(f)
-	def wrapped(*args, **kwargs):
-		print "Before decorated function"
-		r = f(*args, **kwargs)
-		print "After decorated function"
-		return r
-	return wrapped
-endsnippet
-
-snippet ipy
-from IPython import embed; embed()
-endsnippet
-
-snippet xlrd
-from xlrd import open_workbook
-file_content = base64.b64decode(me.file)
-wb = open_workbook(file_contents=file_content)
-sheet = wb.sheets()[0]
-
-for i in range(sheet.nrows):
-	try:
-		row = sheet.row_values(i)
-	except:
-		break
-endsnippet
-
-snippet tz "make date not naiv"
-from dateutil import tz
-tz.gettz(...) # verwenden, ansonsten kommt bei Europe/Berlin nach pytz 2014.3 LMT raus (53 Minuten)
-arrow.get(d).replace(tzinfo=tz.gettz("Europe/Berlin"))
-# localize makes naiv to non naiv; date not changed: DONT USE REPLACE!!!! http://stackoverflow.com/questions/24359540/why-doesnt-pytz-localize-produce-a-datetime-object-with-tzinfo-matching-the-t
-d1 = pytz.timezone('Europe/Berlin').localize(datetime.strptime(d1, "%Y-%m-%d %H:%M:%S")).astimezone(tz=pytz.utc)
-endsnippet
-
-snippet mako
-from mako.template import Template
-text = Template(context['invoice_name']).render(obj=me, year=context['year'])
-endsnippet
-
-snippet vimsettings
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-endsnippet
-
-snippet stdout
-devnull = open(os.devnull, 'wb')
-check_call(('tar', 'xf', filepath), stdout=devnull)
-endsnippet
-
-snippet ctrlc
-import signal
-import sys
-def signal_handler(signal, frame):
-	print('You pressed Ctrl+C!')
-	sys.exit(0)
-signal.signal(signal.SIGINT, signal_handler)
-print('Press Ctrl+C')
-signal.pause()
-endsnippet
-
-snippet requests
-s = requests.Session()  # avoid keep alive
-r = s.get(url, timeout=3) # default 10 seconds
-r = requests.post(url, data=params)
-
-t.text[:300]
-
-endsnippet
-
-snippet caller-name
-inspect.stack()[1][3]
-endsnippet
-
-snippet PickledRedis
-
-import redis
-import pickle
-
-class PickledRedis(redis.StrictRedis):
-    def get(self, name):
-        pickled_value = super(PickledRedis, self).get(name)
-        if pickled_value is None:
-            return None
-        return pickle.loads(pickled_value)
-
-    def set(self, name, value, ex=None, px=None, nx=False, xx=False):
-        return super(PickledRedis, self).set(name, pickle.dumps(value), ex, px, nx, xx)
-endsnippet
-
-snippet hook_into_class
-
-def call_hook(cls):
-	def add_hook(_def):
-		defname = _def[0]
-		defcode = _def[1]
-		replaced_name = "____{}".format(defname)
-		print 'adding hook for {}'.format(defname)
-
-		def hook(self, *args, **kwargs):
-			print "Hooking into {}".format(defname)
-			result = defcode(self, *args, **kwargs)
-			print 'after method'
-			return result
-
-		try:
-			setattr(cls, defname, hook)
-			setattr(cls, replaced_name, defcode)
-		except (AttributeError, TypeError):
-			pass  # skip __name__ and __doc__ and the like
-	import inspect
-	defaultdefs = set(x[0] for x in inspect.getmembers(object, predicate=inspect.ismethod))
-	defs = inspect.getmembers(cls, predicate=inspect.ismethod)
-	for _def in defs:
-		if _def[0].startswith("__"):
-			continue
-		if _def[0] in defaultdefs:
-			continue
-		add_hook(_def)
-	return cls
-
-@call_hook
-class ANTONIA(object):
-	def a1(self, p1):
-		print 'hallo: {}'.format(p1)
-
-	def __init__(self):
-		self.started = datetime.now()
-		self.name = str(uuid.uuid4())
-endsnippet
-
-snippet allloggers
-for logger in logging.Logger.manager.loggerDict.keys():
-	logging.getLogger(logger).setLevel(logging.ERROR)
-endsnippet
-
-snippet excepthook
-def myexcepthook(exctype, value, traceback):
-    if exctype == KeyboardInterrupt:
-        os._exit(0)
-    else:
-        sys.__excepthook__(exctype, value, traceback)
-        logging.error(traceback)
-
-sys.excepthook = myexcepthook
-endsnippet
-
-snippet slice_array
-sliced_res_ids = [res_ids[i:i + batch_size] for i in range(0, len(res_ids), batch_size)]
-endsnippet
-
-snippet subprocess_read_pipe
-
-proc = subprocess.Popen(['/tmp/test.sh'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
-out = proc.stdout
-err = proc.stderr
-
-def reader(pipe, q):
-    try:
-        with pipe:
-            for line in iter(pipe.readline, ''):
-                q.put((pipe, line))
-    finally:
-        q.put(None)
-
-
-q = Queue()
-Thread(target=reader, args=[proc.stdout, q]).start()
-Thread(target=reader, args=[proc.stderr, q]).start()
-for source, line in iter(q.get, None):
-    if source == err:
-        logger.error(line)
-    else:
-        logger.info(line)
-
-proc.wait()
-
-endsnippet
-
-snippet iterfiles
-from itertools import chain
-result = (chain.from_iterable(glob(os.path.join(x[0], '*.tif')) for x in os.walk('.')))
-endsnippet
-
-snippet test "Unit Test"
-import unittest
-class Test(unittest.TestCase):
-	def setUp(self):
-		pass
-
-	def test_$1(self):
-
-		#self.assertTrue(...)
-		#self.assertEqual(..., ...)
-
-		pass
-
-if __name__ == '__main__':
-	unittest.main()
-endsnippet
-
-snippet logging_for_name "logger for __name__"
-logger = logging.getLogger(__name__)
-endsnippet
-
-snippet current_method_in_stack
-method_name = inspect.stack()[0][3]
-if method_name in [x[3] for x in inspect.stack()[1:]]:
-    return
-endsnippet
-
-snippet namemain
-if __name__ == '__main__':
-    $0
-endsnippet
-
-snippet cherryp
-import cherrypy
-from cherrypy.lib.static import serve_file
-import json
-import os
-
-
-# Author: Daniel Petermeier
-#
-# Monjerri is a HTTP Server based on cherrypy,
-# to provision SNOM Phones with VPN configurations and
-# configurations.
-
-# Published under IDC License.
-# Do what you want with it.
-
-# Usage: python3 monjerri.py
-
-# Requirements: - pip3 install cherrypy
-#               - users file containing a nested dictionary in json format: {"username":{"password":"abc1234","archivenr":"50","fts":"test50.tar"}}
-# Please be advised, to use Strong Passwords!
-# Other authentication methods are not supported by SNOM Phones
-
-# TODO: Implement anti-BruteForce-functionality
-# TODO: SSL Implementation possible with SNOM?
-
-class Provisioner(object):
-    default = "Welcome to the Provisioner!"
-    conf_path = "/root/config/provisioning_users.conf"
-    file_path = "/root/transfer"
-    users = {}
-
-    def read_conf(self):
-        if os.path.exists(self.conf_path):
-            with open(self.conf_path, "r") as f:
-                self.users = json.loads(f.read())
-
-    @cherrypy.expose
-    def index(self):
-        return self.default
-
-    @cherrypy.expose
-    def provision(self, u=None, p=None, x=None):
-        if not (u and p and x):
-            return self.default
-        self.read_conf()
-        try:
-            user = self.users[u]
-        except KeyError:
-            return self.default
-        if user["password"] == p and user["archivenr"] == x:
-
-            path = os.path.join(self.file_path, user["fts"])
-
-            if os.path.exists(path):
-                return serve_file(path, "application/x-gtar", "attachment")
-            else:
-                print("File Path not valid! {}".format(path))
-        else:
-            print("Params not valid! p={} ({}),  x={} ({})".format(p, user["password"], x, user["archivenr"]))
-        return self.default
-
-
-if __name__ == '__main__':
-    @cherrypy.tools.register('before_finalize', priority=60)
-    def secureheaders():
-        headers = cherrypy.response.headers
-        headers['X-Frame-Options'] = 'DENY'
-        headers['X-XSS-Protection'] = '1; mode=block'
-
-    conf = {
-        "global":
-        {
-                "server.socket_host": "0.0.0.0",
-                "server.socket_port": 8080,
-                "tools.staticdir.on": True,
-                "tools.staticdir.dir": "/root/transfer",
-        },
-        "/": {
-            "tools.sessions.on": True,
-            "tools.sessions.secure": True,
-            "tools.secureheaders.on": True,
-            "tools.encode.on": True,
-            "tools.encode.encoding": "utf-8"
-        },
-    }
-    cherrypy.quickstart(Provisioner(), "/", conf)
-endsnippet
-
-snippet graphviz
-import graphviz
-import pydot
-
-dot = pydot.Dot(graph_type='digraph')
-from pudb import set_trace
-set_trace()
-node1 = pydot.Node('mod1', style='filled', fillcolor='green')
-node2 = pydot.Node('Sir Bedevere the Wise')
-dot.add_node(node1)
-dot.add_node(node2)
-dot.add_edge(pydot.Edge(node1, node2))
-#dot.edges(('mod1', 'B'))
-#dot.render("/tmp/d.gv", view=True)
-
-from pudb import set_trace
-set_trace()
-dot.write_png('/tmp/test.png')
-endsnippet
-
-snippet ast "visitor example"
-import ast
-from pudb import set_trace
-set_trace()
-
-class v(ast.NodeVisitor):
-    def generic_visit(self, node):
-        print type(node).__name__
-        ast.NodeVisitor.generic_visit(self, node)
-
-x = v()
-t = ast.parse('toparse.py')
-x.visit(t)
-endsnippet
-
-snippet OrderedDict
-records.append(OrderedDict(sorted({
-    'Model': clazz.name,
-    'Field': field.name
-}.items(), key=lambda x: 1 if x[0] == 'Model' else 2)))
-endsnippet
-
-
-snippet md5chunked
-def md5(fname):
-    hash_md5 = hashlib.md5()
-    with open(fname, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
-endsnippet
-
-snippet isinstance_string
-isinstance($1, types.StringTypes)
-endsnippet
-
-snippet contextmanagerlib
-from contextlib import contextmanager
-
-@contextmanager
-def open_file(path, mode):
-    the_file = open(path, mode)
-    yield the_file
-    the_file.close()
-
-files = []
-
-for x in range(100000):
-    with open_file('foo.txt', 'w') as infile:
-        files.append(infile)
-
-for f in files:
-    if not f.closed:
-        print('not closed')
-endsnippet
-
-snippet contextmanagerdecorator
-from contextlib import ContextDecorator
-
-class makeparagraph(ContextDecorator):
-    def __enter__(self):
-        print('<p>')
-        return self
-
-    def __exit__(self, *exc):
-        print('</p>')
-        return False
-
-@makeparagraph()
-def emit_html():
-    print('Here is some non-HTML')
-
-emit_html()
-endsnippet
-
-snippet inquirer "inquirer choices"
-which = inquirer.prompt([inquirer.List('name', 'Choose', choices=hosts.keys())])
-endsnippet
-
-snippet chmodx "pathlib chmod+x"
-import stat
-${1:file}.chmod($1.stat().st_mode | stat.S_IEXEC)
-endsnippet
-
-snippet chunks
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
-endsnippet
-
-snippet groupby
-from itertools import groupby
-for category, lines in groupby(self.order_line, lambda l: l.layout_category_id):
-endsnippet
-
-global !p
-def fraction(a, b):
-    try:
-        return "%.1f" % (float(a)/float(b))
-    except (ValueError, ZeroDivisionError):
-        return "ERR"
-endglobal
-
-snippet uuid
-`!p import uuid
-if not snip.c:
-    import os
-    snip.rv = str(uuid.uuid4())
-    snip.rv = snip.fn
-    snip.rv = os.getcwd()
-`
-endsnippet
-
-snippet jsonencode
-class StringEncoder(json.JSONEncoder):
-    def default(self, obj):
-        return str(obj)
-
-json.dumps(data, cls=StringEncoder)
-endsnippet
-
-snippet bp
-breakpoint()
-endsnippet
-
-snippet trace
-import pudb
-pudb.set_trace()
-endsnippet
-
-snippet make-executable
-os.chmod(bin_autobot, os.stat(bin_autobot).st_mode | stat.S_IEXEC)
-endsnippet
-
-snippet pymongo
-from pymongo import MongoClient
-mongoclient = MongoClient(
-	os.environ["MONGO_HOST"],
-	int(os.environ['MONGO_PORT']),
-	username=os.environ['MONGO_USERNAME'],
-	password=os.environ['MONGO_PASSWORD'],
-	connectTimeoutMS=20000, socketTimeoutMS=20000, serverSelectionTimeoutMS=20000,
-)
-db = mongoclient.get_database('cicd_sites')
-
-db.fine_one({...})
-db.update_one({search}, {"$set": {}}, upsert=False)
-endsnippet
-
-snippet has_file_access
-if os.access(path, os.W_OK)
-endsnippet
-
-snippet trace
-trace = '\n'.join(traceback.format_stack())
-endsnippet
-
-snippet job-retry-error
-from odoo.addons.queue_job.exception import RetryableJobError
-endsnippet
-
-snippet rgetattr_rsetattr
-import functools
-
-def rsetattr(obj, attr, val):
-    pre, _, post = attr.rpartition('.')
-    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
-
-def rgetattr(obj, attr, *args):
-    def _getattr(obj, attr):
-        return getattr(obj, attr, *args)
-    return functools.reduce(_getattr, [obj] + attr.split('.'))
-endsnippet
-

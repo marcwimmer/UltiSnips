@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 #https://github.com/erietz/ultisnips-vscode
+import subprocess
 from pathlib import Path
 import sys
 import os
@@ -28,4 +29,4 @@ for base, paths in collected.items():
     file.write_text(content)
 
 # use https://github.com/erietz/ultisnips-vscode to convert to vscode
-os.system("ultisnips_to_vscode")
+subprocess.check_call("ultisnips2vscode")
