@@ -477,8 +477,7 @@ endsnippet
 
 snippet sec-Group
 <record id="group_${1:name}" model="res.groups">
-	<field name="name">${1/_/\./g}</field>
-    <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	<field name="name">${1/_/./g}</field>
     <field name="category_id" ref="${2:category_id}"/>
 </record>
 endsnippet
@@ -492,7 +491,7 @@ snippet sec-Manager-and-user-security group
 </record>
 endsnippet
 
-snippet sec-Domain-Filter-Rule-on-current-user
+snippet sec-Domain-current-user
 <record id="property_rule_${1:name}_${2/\./_/g}" model="ir.rule">
 		<field name="domain_force">[('${3:field_name}','=',user.id)]</field>
         <field name='model_id' ref='${2:model}' />

@@ -178,3 +178,7 @@ snippet local_username
 - debug: var=username_on_the_host
 
 endsnippet
+
+snippet homedirectory
+homedir=$( getent passwd "{{ username }}" | cut -d: -f6 )
+endsnippet

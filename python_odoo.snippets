@@ -1497,3 +1497,16 @@ from odoo.tools import (
     email_re,
 )
 endsnippet
+
+snippet unittest-form
+# Create PO
+po_form = Form(self.env['purchase.order'])
+po_form.partner_id = self.partner_id
+with po_form.order_line.new() as po_line:
+	po_line.product_id = self.product1
+	po_line.product_qty = 2
+	po_line.price_unit = 100.0
+	po_line.supplier_discount_id = discount
+order = po_form.save()
+order.button_confirm()
+endsnippet
