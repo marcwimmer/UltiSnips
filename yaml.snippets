@@ -1,226 +1,3 @@
-extends yaml
-
-# ===========================================
-# Yaml / Openerp snippets
-# ===========================================
-snippet now "with time"
-!eval datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-endsnippet
-snippet now "without time"
-!eval datetime.now().strftime('%Y-%m-%d')
-endsnippet
-
-# ===========================================
-# Pure Python
-# ===========================================
-snippet b64decode
-import base64
-$1 = base64.b64decode($1)
-$2
-endsnippet
-
-snippet b64encode
-import base64
-$1 = base64.b64encode($1)
-$2
-endsnippet
-
-snippet ni
-raise Exception("not implemented")
-endsnippet
-
-snippet tempfile
-import tempfile
-file = tempfile.TemporaryFile()
-$1
-endsnippet
-
-# ===========================================
-# unit test
-# ===========================================
-snippet xmlid_pce
-product.product_uom_unit
-endsnippet
-
-snippet lgdebug
-import logging
-logging.getLogger(__name__).debug("${0}")
-endsnippet
-
-snippet spg
-self.pool.get("${1}")
-endsnippet
-
-snippet log
-import logging
-logging.getLogger(__name__).debug("${0}")
-endsnippet
-
-snippet com "Comment"
--
-  ${1:comment}
-endsnippet
-
-snippet wf
--
-  !workflow {model: ${0:model}, action: ${1:action}, ref: ${2:ref}}
-endsnippet
-
-snippet rec "Simple Record with comment"
--
-  !record {model: ${2:model}, id: ${3:id}}:
-    ${4:field}: ${5:value}
-
-endsnippet
-
-
-snippet py "Python Code"
--
-  !python {model: ${2:model}}: |
-    ${0}
-
-endsnippet
-
-snippet ass "Assert"
--
-  !assert {model: ${1:model}, id: ${2:id}, severity: error, string: "${3:message}"}: 
-    - ${4:field} == ${5:value}
-    - ${6:field} == ${7:ref('sample')}
-
-endsnippet
-
-snippet ass "Assert with Search"
--
-  !assert {model: ${1:model}, search: "[(${2:})]", count: ${4:100} severity: error, string: "${5:message}"}
-
-endsnippet
-
-snippet rep "Test Report"
--
-  !python {model: ${1:model}}: |
-    import netsvc, tools, os
-    #report settings
-    report_name = "report.${2:report_name}" #example: report_name="report.my_report" - Underscore nach praefix!!!
-    output_filename="$2"
-    output_path = tools.config['test_report_directory'] or "/tmp"
-
-    #report data:
-    data ={}
-    #here you can pass optional data as it would come from a wizard form page
-    data["form"] = {
-        '${3:field}': ${4:value}, 
-    }
-    id = ${5:get_ids} #todo
-    import netsvc, tools, os
-
-
-    (data, format) = netsvc.LocalService(report_name).create(cr, uid, [id], data, {}) 
-    file(os.path.join(output_path, output_filename+'.'+format), 'wb+').write(data)
-endsnippet
-
-snippet partner "Test Partner"
--
-  Create partner
--
-  !record {model: res.partner, id: ${1:prefix}_${2:partnerid}}:
-    name: Partner 1
-
-endsnippet
-
-
-snippet assert
--
-  !assert {model: ${1:model}, id: ${2:id}, string: ${3:msg}, severity: error}:
-    - ${4:field} == ref('$5')
-    - $4 == '$5'
-    - $4 == $5
-endsnippet
-
-snippet po "The purchase.order"
--
-  !record {model: purchase.order, id: ${1:prefix}_${2:id}}:
-    partner_id: $1_${3:partner_id}
-    invoice_method: order
-    order_line:
-      - product_id: $1_${4:product_id}
-        price_unit: ${5:price_unit}
-        product_qty: ${6:quantity}
-
-endsnippet
-
-snippet po "Confirm via Workflow"
--
-  !python {model: purchase.order}: |
-    import netsvc
-    wf_service = netsvc.LocalService("workflow")
-    purchase = self.browse(cr, uid, ref('${1:prefix}_${2:poid}'), context=context)
-    wf_service.trg_validate(uid, 'purchase.order', purchase.id, 'purchase_confirm', cr)
-
-endsnippet
-
-snippet picking "Confirm Picking"
--
-  Confirm the picking, so that stock raises
--
-  !python {model: stock.move}: |
-    move_ids = self.search(cr, uid, [("product_id", "=", ref("lifo_prod1"))])
-    move_ids = self.read(cr, uid, move_ids, ["picking_id"])
-    picking_id = move_ids[0]["picking_id"][0]
-    context.update({'active_model': 'stock.picking', 'active_id': picking_id, 'active_ids': [picking_id], 'move_id': move_ids[0]["id"]})
-    import logging
-    logging.getLogger(__name__).debug(context)
--
-  !python {model: stock.partial.picking}: |
-    pp = self.create(cr, uid, {
-        "quantity": 10,
-        "product_id": ref("lifo_prod1"),
-        "product_uom": ref("product.product_uom_unit"),
-        "move_id": context["move_id"],
-        "location_id": ref("lifo_location_supplier"),
-        "location_dest_id": ref("lifo_location_stock"),
-    }, context=context)
-    self.do_partial(cr, uid, [pp], context=context)
-endsnippet
-
-#============================================================
-#Test Templates 
-#============================================================
-snippet template "product_supplier_supplierinfo"
--
-  !record {model: product.product, id: ${1:prefix}_prod1}:
-    name: prod1
-    default_code: Schlumpf1
--
-  !record {model: res.partner, id: $1_supp1}:
-    name: supplier1
--
-  !record {model: product.supplierinfo, id: ts_suppinfo1}:
-    name: ts_supp1
-    min_qty: 0
-
--
-  !python {model: product.supplierinfo}: |
-    obj_product_products = self.pool.get("product.product")
-    prod_tmpl_id = obj_product_products.read(cr, uid, ref("ts_prod1"), ["product_tmpl_id"])["product_tmpl_id"][0]
-    self.write(cr, uid, [ref('ts_suppinfo1')], {"product_id": prod_tmpl_id})
-
-endsnippet
-
-snippet c=c
-context=context
-endsnippet
-
-snippet PCE
-product.product_uom_unit
-endsnippet
-
-snippet function
-- !function {model: res.partner, name: _install_partner_firstname}
-endsnippet
-
-snippet 404
-return http.request.render('http_routing.404')
-endsnippet
 snippet apt
 - name: install pip
   apt:
@@ -479,3 +256,226 @@ services:
       - DISPLAY
 endsnippet
 
+extends yaml
+
+# ===========================================
+# Yaml / Openerp snippets
+# ===========================================
+snippet now "with time"
+!eval datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+endsnippet
+snippet now "without time"
+!eval datetime.now().strftime('%Y-%m-%d')
+endsnippet
+
+# ===========================================
+# Pure Python
+# ===========================================
+snippet b64decode
+import base64
+$1 = base64.b64decode($1)
+$2
+endsnippet
+
+snippet b64encode
+import base64
+$1 = base64.b64encode($1)
+$2
+endsnippet
+
+snippet ni
+raise Exception("not implemented")
+endsnippet
+
+snippet tempfile
+import tempfile
+file = tempfile.TemporaryFile()
+$1
+endsnippet
+
+# ===========================================
+# unit test
+# ===========================================
+snippet xmlid_pce
+product.product_uom_unit
+endsnippet
+
+snippet lgdebug
+import logging
+logging.getLogger(__name__).debug("${0}")
+endsnippet
+
+snippet spg
+self.pool.get("${1}")
+endsnippet
+
+snippet log
+import logging
+logging.getLogger(__name__).debug("${0}")
+endsnippet
+
+snippet com "Comment"
+-
+  ${1:comment}
+endsnippet
+
+snippet wf
+-
+  !workflow {model: ${0:model}, action: ${1:action}, ref: ${2:ref}}
+endsnippet
+
+snippet rec "Simple Record with comment"
+-
+  !record {model: ${2:model}, id: ${3:id}}:
+    ${4:field}: ${5:value}
+
+endsnippet
+
+
+snippet py "Python Code"
+-
+  !python {model: ${2:model}}: |
+    ${0}
+
+endsnippet
+
+snippet ass "Assert"
+-
+  !assert {model: ${1:model}, id: ${2:id}, severity: error, string: "${3:message}"}: 
+    - ${4:field} == ${5:value}
+    - ${6:field} == ${7:ref('sample')}
+
+endsnippet
+
+snippet ass "Assert with Search"
+-
+  !assert {model: ${1:model}, search: "[(${2:})]", count: ${4:100} severity: error, string: "${5:message}"}
+
+endsnippet
+
+snippet rep "Test Report"
+-
+  !python {model: ${1:model}}: |
+    import netsvc, tools, os
+    #report settings
+    report_name = "report.${2:report_name}" #example: report_name="report.my_report" - Underscore nach praefix!!!
+    output_filename="$2"
+    output_path = tools.config['test_report_directory'] or "/tmp"
+
+    #report data:
+    data ={}
+    #here you can pass optional data as it would come from a wizard form page
+    data["form"] = {
+        '${3:field}': ${4:value}, 
+    }
+    id = ${5:get_ids} #todo
+    import netsvc, tools, os
+
+
+    (data, format) = netsvc.LocalService(report_name).create(cr, uid, [id], data, {}) 
+    file(os.path.join(output_path, output_filename+'.'+format), 'wb+').write(data)
+endsnippet
+
+snippet partner "Test Partner"
+-
+  Create partner
+-
+  !record {model: res.partner, id: ${1:prefix}_${2:partnerid}}:
+    name: Partner 1
+
+endsnippet
+
+
+snippet assert
+-
+  !assert {model: ${1:model}, id: ${2:id}, string: ${3:msg}, severity: error}:
+    - ${4:field} == ref('$5')
+    - $4 == '$5'
+    - $4 == $5
+endsnippet
+
+snippet po "The purchase.order"
+-
+  !record {model: purchase.order, id: ${1:prefix}_${2:id}}:
+    partner_id: $1_${3:partner_id}
+    invoice_method: order
+    order_line:
+      - product_id: $1_${4:product_id}
+        price_unit: ${5:price_unit}
+        product_qty: ${6:quantity}
+
+endsnippet
+
+snippet po "Confirm via Workflow"
+-
+  !python {model: purchase.order}: |
+    import netsvc
+    wf_service = netsvc.LocalService("workflow")
+    purchase = self.browse(cr, uid, ref('${1:prefix}_${2:poid}'), context=context)
+    wf_service.trg_validate(uid, 'purchase.order', purchase.id, 'purchase_confirm', cr)
+
+endsnippet
+
+snippet picking "Confirm Picking"
+-
+  Confirm the picking, so that stock raises
+-
+  !python {model: stock.move}: |
+    move_ids = self.search(cr, uid, [("product_id", "=", ref("lifo_prod1"))])
+    move_ids = self.read(cr, uid, move_ids, ["picking_id"])
+    picking_id = move_ids[0]["picking_id"][0]
+    context.update({'active_model': 'stock.picking', 'active_id': picking_id, 'active_ids': [picking_id], 'move_id': move_ids[0]["id"]})
+    import logging
+    logging.getLogger(__name__).debug(context)
+-
+  !python {model: stock.partial.picking}: |
+    pp = self.create(cr, uid, {
+        "quantity": 10,
+        "product_id": ref("lifo_prod1"),
+        "product_uom": ref("product.product_uom_unit"),
+        "move_id": context["move_id"],
+        "location_id": ref("lifo_location_supplier"),
+        "location_dest_id": ref("lifo_location_stock"),
+    }, context=context)
+    self.do_partial(cr, uid, [pp], context=context)
+endsnippet
+
+#============================================================
+#Test Templates 
+#============================================================
+snippet template "product_supplier_supplierinfo"
+-
+  !record {model: product.product, id: ${1:prefix}_prod1}:
+    name: prod1
+    default_code: Schlumpf1
+-
+  !record {model: res.partner, id: $1_supp1}:
+    name: supplier1
+-
+  !record {model: product.supplierinfo, id: ts_suppinfo1}:
+    name: ts_supp1
+    min_qty: 0
+
+-
+  !python {model: product.supplierinfo}: |
+    obj_product_products = self.pool.get("product.product")
+    prod_tmpl_id = obj_product_products.read(cr, uid, ref("ts_prod1"), ["product_tmpl_id"])["product_tmpl_id"][0]
+    self.write(cr, uid, [ref('ts_suppinfo1')], {"product_id": prod_tmpl_id})
+
+endsnippet
+
+snippet c=c
+context=context
+endsnippet
+
+snippet PCE
+product.product_uom_unit
+endsnippet
+
+snippet function
+- !function {model: res.partner, name: _install_partner_firstname}
+endsnippet
+
+snippet 404
+return http.request.render('http_routing.404')
+endsnippet

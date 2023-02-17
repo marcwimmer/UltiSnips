@@ -1,20 +1,42 @@
-snippet simple_start
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-
-driver = webdriver.Firefox()
-driver.get("http://www.python.org")
-assert "Python" in driver.title
-elem = driver.find_element_by_name("q")
-elem.clear()
-elem.send_keys("pycon")
-elem.send_keys(Keys.RETURN)
-assert "No results found." not in driver.page_source
-driver.close()
+snippet cpbefore_finalize
+@cherrypy.tools.register('before_finalize', priority=60)
+def secureheaders():
+	headers = cherrypy.response.headers
+	headers['X-Frame-Options'] = 'DENY'
+	headers['X-XSS-Protection'] = '1; mode=block'
 endsnippet
 
-snippet import_connector_dict
-from odoo.addons.connector_common import CIOrderedDict
+
+snippet click_completion_setup
+@click.option(
+    "-x",
+    "--execute",
+    is_flag=True,
+    help=("Execute the script to insert completion into users rc-file."),
+)
+def completion(execute):
+    shell = os.environ["SHELL"].split("/")[-1]
+    rc_file = Path(os.path.expanduser(f"~/.{shell}rc"))
+    line = f'eval "$(_${1:/\w+/\u$0/g}_COMPLETE={shell}_source ${1:exec_name})"'
+    if execute:
+        content = rc_file.read_text().splitlines()
+        if not list(
+            filter(
+                lambda x: line in x and not x.strip().startswith("#"),
+                content,
+            )
+        ):
+            content += [f"\n{line}"]
+            click.secho(
+                f"Inserted successfully\n{line}"
+                "\n\nPlease restart you shell."
+                )
+            rc_file.write_text('\n'.join(content))
+        else:
+            click.secho("Nothing done - already existed.")
+    else:
+        click.secho("\n\n" f"Insert into {rc_file}\n\n" f"echo '{line}' >> {rc_file}" "\n\n")
+
 endsnippet
 snippet pudb
 import pudb;pudb.set_trace()
@@ -764,10 +786,6 @@ snippet trace
 trace = '\n'.join(traceback.format_stack())
 endsnippet
 
-snippet job-retry-error
-from odoo.addons.queue_job.exception import RetryableJobError
-endsnippet
-
 snippet rgetattr_rsetattr
 import functools
 
@@ -781,31 +799,9 @@ def rgetattr(obj, attr, *args):
     return functools.reduce(_getattr, [obj] + attr.split('.'))
 endsnippet
 
-snippet cpbefore_finalize
-@cherrypy.tools.register('before_finalize', priority=60)
-def secureheaders():
-	headers = cherrypy.response.headers
-	headers['X-Frame-Options'] = 'DENY'
-	headers['X-XSS-Protection'] = '1; mode=block'
+snippet import_connector_dict
+from odoo.addons.connector_common import CIOrderedDict
 endsnippet
-
-
-snippet pylint-broad-exception
-# pylint: disable=broad-except
-endsnippet
-
-snippet pylint-protected-access
-# pylint: disable=protected-access
-endsnippet
-snippet apply
-df[${1:fieldname}] = df.apply(lambda row: ${2:row[0] ** 2},  axis=1)
-$0
-endsnippet
-
-snippet groupby "Group By - Ausgabe normaler Dataframe, keine Indexspalten (ansonsten kommt ne Series raus)"
-df.groupby(fields_array, as_index=False)
-endsnippet
-
 extends python
 
 snippet unittest "V11"
@@ -2318,34 +2314,43 @@ with po_form.order_line.new() as po_line:
 order = po_form.save()
 order.button_confirm()
 endsnippet
-snippet click_completion_setup
-@click.option(
-    "-x",
-    "--execute",
-    is_flag=True,
-    help=("Execute the script to insert completion into users rc-file."),
-)
-def completion(execute):
-    shell = os.environ["SHELL"].split("/")[-1]
-    rc_file = Path(os.path.expanduser(f"~/.{shell}rc"))
-    line = f'eval "$(_${1:/\w+/\u$0/g}_COMPLETE={shell}_source ${1:exec_name})"'
-    if execute:
-        content = rc_file.read_text().splitlines()
-        if not list(
-            filter(
-                lambda x: line in x and not x.strip().startswith("#"),
-                content,
-            )
-        ):
-            content += [f"\n{line}"]
-            click.secho(
-                f"Inserted successfully\n{line}"
-                "\n\nPlease restart you shell."
-                )
-            rc_file.write_text('\n'.join(content))
-        else:
-            click.secho("Nothing done - already existed.")
-    else:
-        click.secho("\n\n" f"Insert into {rc_file}\n\n" f"echo '{line}' >> {rc_file}" "\n\n")
 
+snippet job-retry-error
+from odoo.addons.queue_job.exception import RetryableJobError
 endsnippet
+
+
+snippet jsontools
+from odoo.addons.module_tools.jsontools import json_encode
+endsnippet 
+snippet apply
+df[${1:fieldname}] = df.apply(lambda row: ${2:row[0] ** 2},  axis=1)
+$0
+endsnippet
+
+snippet groupby "Group By - Ausgabe normaler Dataframe, keine Indexspalten (ansonsten kommt ne Series raus)"
+df.groupby(fields_array, as_index=False)
+endsnippet
+
+snippet pylint-broad-exception
+# pylint: disable=broad-except
+endsnippet
+
+snippet pylint-protected-access
+# pylint: disable=protected-access
+endsnippet
+snippet simple_start
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+driver = webdriver.Firefox()
+driver.get("http://www.python.org")
+assert "Python" in driver.title
+elem = driver.find_element_by_name("q")
+elem.clear()
+elem.send_keys("pycon")
+elem.send_keys(Keys.RETURN)
+assert "No results found." not in driver.page_source
+driver.close()
+endsnippet
+
