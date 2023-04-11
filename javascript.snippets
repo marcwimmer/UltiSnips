@@ -11,6 +11,12 @@ endsnippet
 
 extends javascript
 
+snippet webix.message
+webix.message("Selected: "+this.getItem(id).value)
+endsnippet
+
+extends javascript
+
 snippet rpc "Free"
 self.rpc({
     url: '/web/${1}',
@@ -693,11 +699,5 @@ this._rpc({
                 fields: [filter.write_field],
             })
             .then(function (res) {
-endsnippet
-
-extends javascript
-
-snippet webix.message
-webix.message("Selected: "+this.getItem(id).value)
 endsnippet
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#https://github.com/erietz/ultisnips-vscode
+# https://github.com/erietz/ultisnips-vscode
 import subprocess
 from pathlib import Path
 import sys
@@ -10,12 +10,31 @@ from pathlib import Path
 import inspect
 import os
 from pathlib import Path
-current_dir = Path(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+import inspect
+import os
+from pathlib import Path
+import json
+
+current_dir = Path(
+    os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+)
+conf_file = Path(os.path.expanduser("~/.vscode/ultisnips-vscode.json"))
+if not conf_file.exists():
+    conf_file.parent.mkdir(parents=True, exist_ok=True)
+    print("Uses configuration file in {conf_file}")
+    SAMPLE_CONTENT = json.dumps(
+        {
+            "ultisnips-snippets": str(current_dir),
+            "vscode-snippets": "~/Library/Application Support/Code/User/snippets/",
+        },
+        indent=4,
+    )
+    conf_file.write_text(SAMPLE_CONTENT)
 
 collected = {}
 
-for file in Path(current_dir).glob("*.snippets"):
-    if '_' not in file.name:
+for file in current_dir.glob("*.snippets"):
+    if "_" not in file.name:
         continue
     base = file.name.split("_")[0]
     collected.setdefault(base, [])
@@ -24,8 +43,8 @@ for file in Path(current_dir).glob("*.snippets"):
 for base, paths in collected.items():
     content = ""
     for file in paths:
-        content += file.read_text() + '\n'
-    file = Path(current_dir) / f"{base}.snippets"
+        content += file.read_text() + "\n"
+    file = current_dir / f"{base}.snippets"
     file.write_text(content)
 
 # use https://github.com/erietz/ultisnips-vscode to convert to vscode
