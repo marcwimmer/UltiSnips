@@ -21,7 +21,7 @@ snippet xpath
 endsnippet
 
 snippet record
-<record model="${1}" id="${2}">
+<record id="${1}" model="${2}" >
 	<field name="${3}">${4}</field>
 </record>
 endsnippet
@@ -158,7 +158,7 @@ snippet calendar
 endsnippet
 
 snippet kanban "new kanban"
-    <record model="ir.ui.view" id="view_${/\./_/g}_kanban">
+    <record id="view_${/\./_/g}_kanban" model="ir.ui.view">
         <field name="model">${1:model}</field>
         <field name="name">${2:name}</field>
         <field name="arch" type="xml">
@@ -237,7 +237,7 @@ snippet search "search: inherit"
 endsnippet
 
 snippet graph "graph: insert line graph view"
-<record model="ir.ui.view" id="view_${1/\./_/g}_line_graph">
+<record id="view_${1/\./_/g}_line_graph" model="ir.ui.view">
 	<field name="model">${1:model}</field>
 	<field name="name">${2:title}</field>
 	<field name="type">graph</field>
@@ -262,7 +262,7 @@ endsnippet
 #Actions
 #================================================
 snippet act "server-action with menuitem"
-<record model="ir.actions.server" id="act_${1:id_of_menu}_server">
+<record id="act_${1:id_of_menu}_server" model="ir.actions.server">
 	<field name="name">$1</field>
 	<field name="model_id" search="[('name', '=', '${2:model}')]" />
 	<field name="type">ir.actions.server</field>
@@ -273,7 +273,7 @@ snippet act "server-action with menuitem"
 endsnippet
 
 snippet act "server-action with menuitem (7.0)"
-<record model="ir.actions.server" id="act_${1:id_of_menu}_server">
+<record id="act_${1:id_of_menu}_server" model="ir.actions.server">
 	<field name="name">$1</field>
 	<field name="type">ir.actions.server</field>
 	<field name="model_id" search="[('name', '=', '${2:model}')]" />
@@ -284,7 +284,7 @@ snippet act "server-action with menuitem (7.0)"
 endsnippet
 
 snippet act "window-action called by menu-item"
-<record model="ir.actions.act_window" id="act_${1:id_of_menu}_window">
+<record id="act_${1:id_of_menu}_window" model="ir.actions.act_window">
 	<field name="name">${2:title}</field>
 	<field name="res_model">${3:model}</field>
 	<field name="view_mode">${4:tree,form}</field>
@@ -325,7 +325,7 @@ endsnippet
 
 snippet wiz "Typical page 1 of wizard"
 <!-- Wizard ${1:pagename}-->
-<record model="ir.ui.view" id="wizard_${2:modulename}_${3:wizname}_page_$1">
+<record id="wizard_${2:modulename}_${3:wizname}_page_$1" model="ir.ui.view">
 	<field name="name">${4:heading}</field>
 	<field name="model">${5:wizard_osv_memory_object}</field>
 	<field name="type">form</field>
@@ -347,7 +347,7 @@ endsnippet
 
 snippet wiz "Typical page LAST of wizard"
 <!-- Wizard ${1:Done}-->
-<record model="ir.ui.view" id="wizard_${2:modulename}_${3:wizname}_page_$1">
+<record id="wizard_${2:modulename}_${3:wizname}_page_$1" model="ir.ui.view">
 	<field name="name">${4:heading}</field>
 	<field name="model">${5:wizard_osv_memory_object}</field>
 	<field name="type">form</field>
@@ -397,19 +397,6 @@ If these two fields don't match, then unit tests of report won't work!
 	report_type="webkit" />
 endsnippet
 
-#wird in OpenERP 6.1 nicht mehr benötigt - alleine <report /> reicht aus
-#26.04.2013: kann ich bestätigen - echt easy; war sofort erreichbar der report
-#snippet webkit "Button at Entity to open Report"
-#    <record model="ir.values" id="${1:report_action_id}_client_action">
-#        <field name="key">action</field>
-#        <field name="key2">client_print_multi</field>
-#        <field name="model">${2:model_with_dots}</field>
-#        <field name="name">$1</field>
-#        <field name="object" eval="True" />
-#        <field name="value" eval="'ir.actions.report.xml,'+str($1)" />
-#    </record>
-#endsnippet
-
 #=================================================
 #Aeroo Reports
 #================================================
@@ -452,7 +439,7 @@ snippet sec "Manager and user security group"
 endsnippet
 
 snippet sec "Access Read"
-<record model="ir.model.access" id="access_${1:module}_${2:model}_read">
+<record id="access_${1:module}_${2:model}_read" model="ir.model.access">
 	<field name="name">access_$1_$2_read</field>
 		<field name="model_id" ref="$1.model_$2" />
 		<field name="group_id" ref="$0.group_$1_user" />
@@ -464,7 +451,7 @@ snippet sec "Access Read"
 endsnippet
 
 snippet sec "Access Read/Write"
-<record model="ir.model.access" id="access_${1:module}_${2:model}_manager">
+<record id="access_${1:module}_${2:model}_manager" model="ir.model.access">
 	<field name="name">access_$1_$2_manager</field>
 		<field name="model_id" ref="$1.model_$2" />
 		<field name="group_id" ref="$0.group_$1_manager" />
@@ -476,7 +463,7 @@ snippet sec "Access Read/Write"
 endsnippet
 
 snippet sec "Access Read, Access Read/Write"
-<record model="ir.model.access" id="access_${1:module}_${2:model}_read">
+<record id="access_${1:module}_${2:model}_read" model="ir.model.access">
 	<field name="name">access_$1_$2_read</field>
 		<field name="model_id" ref="$1.model_$2" />
 		<field name="group_id" ref="$0.group_$1_user" />
@@ -485,7 +472,7 @@ snippet sec "Access Read, Access Read/Write"
 		<field name="perm_create" eval="False" />
 		<field name="perm_unlink" eval="False" />
 </record>
-<record model="ir.model.access" id="access_${1:module}_${2:model}_manager">
+<record id="access_${1:module}_${2:model}_manager" model="ir.model.access">
 	<field name="name">access_$1_$2_manager</field>
 		<field name="model_id" ref="$1.model_$2" />
 		<field name="group_id" ref="$0.group_$1_manager" />

@@ -22,7 +22,7 @@ snippet xpath
 endsnippet
 
 snippet record
-<record model="${1}" id="${2}">
+<record id="${2}" model="${1}">
 	<field name="${3}">${4}</field>
 </record>
 endsnippet
@@ -144,7 +144,7 @@ snippet calendar
 endsnippet
 
 snippet kanban_new
-<record model="ir.ui.view" id="view_${1/\./_/g}_kanban">
+<record id="view_${1/\./_/g}_kanban" model="ir.ui.view">
     <field name="model">${1:model}</field>
     <field name="name">${2:name}</field>
     <field name='type'>kanban</field>
@@ -165,7 +165,7 @@ snippet kanban_new
 endsnippet
 
 snippet kanban_inherit
-<record model="ir.ui.view" id="view_${2/\./_/g}_kanban">
+<record id="view_${2/\./_/g}_kanban" model="ir.ui.view">
     <field name="model">${2:model}</field>
     <field name='type'>kanban</field>
     <field name='inherit_id' ref="${1:}" />
@@ -263,7 +263,7 @@ snippet search-inherit
 endsnippet
 
 snippet graph "graph: insert line graph view"
-<record model="ir.ui.view" id="view_${1/\./_/g}_line_graph">
+<record id="view_${1/\./_/g}_line_graph" model="ir.ui.view">
 	<field name="model">${1:model}</field>
 	<field name="name">${2:title}</field>
 	<field name="type">graph</field>
@@ -288,7 +288,7 @@ endsnippet
 #Actions
 #================================================
 snippet act_server-action-with-menuitem
-<record model="ir.actions.server" id="act_${1:id_of_menu}_server">
+<record id="act_${1:id_of_menu}_server" model="ir.actions.server">
 	<field name="name">$1</field>
 	<field name="type">ir.actions.server</field>
 	<field name="model_id" ref="model_${2:model}" />
@@ -466,7 +466,7 @@ endsnippet
 #Security
 #================================================
 snippet sec-Group-Category
-<record model="ir.module.category" id="${1:id}">
+<record id="${1:id}" model="ir.module.category">
     <field name="name">${2:name}</field>
     ${3:<field name="description">${4:describe it}</field>}
     ${5:<field name="parent_id" ref="$6" />}
@@ -604,7 +604,7 @@ snippet t-extend
 endsnippet
 
 snippet seq
-<record model="ir.sequence" id="${1/\./_/g}">
+<record id="${1/\./_/g}" model="ir.sequence">
     <field name="name">${1:id}</field>
     <field name="implementation">no_gap</field>
 </record>
@@ -631,14 +631,14 @@ snippet modseq "Sequence of order of how the file is inserted to __init__.py"
 endsnippet
 
 snippet config
-<record model='ir.config_parameter' id='${1:id}'>
+<record id='${1:id}' model='ir.config_parameter'>
     <field name='key'>${2:key}</field>
     <field name='value'>${3:value}</field>
 </record>
 endsnippet
 
 snippet ir.value-tree_but_open---opens-window-on-click-in-a-tree
-<record model='ir.values' id="${1:id}">
+<record id="${1:id}" model='ir.values'>
     <field name='key2'>tree_but_open</field>
     <field name='model'>${6:model}</field>
     <field name='name'>${7:Labe}</field>
@@ -647,7 +647,7 @@ snippet ir.value-tree_but_open---opens-window-on-click-in-a-tree
 endsnippet
 
 snippet ir.value-tree_but_action---executes-any-action-on-tree-click-(seldom-used)-
-<record model='ir.values' id="${1:id}">
+<record id="${1:id}" model='ir.values'>
     <field name='key2'>tree_but_action</field>
     <field name='model'>${6:model}</field>
     <field name='name'>${7:Labe}</field>
@@ -656,7 +656,7 @@ snippet ir.value-tree_but_action---executes-any-action-on-tree-click-(seldom-use
 endsnippet
 
 snippet ir.value-client_action_multi---executes-action-on-multiple-instances
-<record model='ir.values' id="${1:id}">
+<record id="${1:id}" model='ir.values'>
     <field name='key2'>client_action_multi</field>
     <field name='model'>${6:model}</field>
     <field name='model_id' ref="model_${6/\./\_/g}" />
@@ -667,7 +667,7 @@ snippet ir.value-client_action_multi---executes-action-on-multiple-instances
 endsnippet
 
 snippet ir.value-client_print_multi---prints-report-on-multiple-instances
-<record model='ir.values' id="${1:id}">
+<record id="${1:id}" model='ir.values'>
     <field name='key2'>${2:tree_but_open}${3:tree_but_action}${4:client_print_multi}${5:client_action_multi}</field>
     <field name='model'>${6:model}</field>
     <field name='name'>${7:Labe}</field>
@@ -693,7 +693,7 @@ self.message_post_with_view("$1_template", values={'self': '...', 'param1': 'v1'
 endsnippet
 
 snippet sec-Add-Group-to-menuitem
-<record model="ir.ui.menu" id="${1:menu_id}">
+<record id="${1:menu_id}" model="ir.ui.menu">
     <field name="groups_id" eval="[(4, ref('${2:group_id}'))]" />
 </record>
 $0
@@ -742,7 +742,7 @@ endsnippet
 
 
 snippet act_Specific-view-for-window-action
-<record model="ir.actions.act_window.view" id="${1:}">
+<record id="${1:}" model="ir.actions.act_window.view">
 	<field name="view_mode">${2:tree}${3:form}</field>
 	<field name="view_id" ref="${4:view_id}" />
 	<field name="act_window_id" ref="${5:id}" />
@@ -762,7 +762,7 @@ snippet href "Call action from kanban view"
 endsnippet
 
 snippet email_template-record
-<record model="mail.template" id="${1}">
+<record id="${1}" model="mail.template">
 	<field name="model_id" ref="${2}" />
 	<field name="name">${3}</field>
 	<field name="email_to">${ctx['email_to']}</field>
@@ -772,7 +772,7 @@ snippet email_template-record
 endsnippet
 
 snippet email_template-record qweb (needs email_template_qweb)
-    <record model="mail.template" id="default_template">
+    <record id="default_template" model="mail.template">
       <field name="model_id" ref="base.model_res_partner"/>
       <field name="name">Invoice Warning per Partner</field>
       <field name="email_to">${ctx['email_to']}</field>
@@ -885,7 +885,7 @@ snippet report "Pivot"
 endsnippet
 
 snippet channel
-<record model="mail.channel" id="${1:id}">
+<record id="${1:id}" model="mail.channel">
   <field name="channel_type">channel</field>
   <field name="public">groups</field>
   <field name="name">Master-Data</field>
@@ -921,7 +921,7 @@ snippet qweb-format-monetary-V11
 endsnippet
 
 snippet menu "Web Icon"
-<record model="ir.ui.menu" id="root">
+<record id="root" model="ir.ui.menu">
 	<field name="web_icon">contracts,static/contracts.png</field>
 </record>
 endsnippet
