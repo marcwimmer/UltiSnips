@@ -701,3 +701,82 @@ this._rpc({
             .then(function (res) {
 endsnippet
 
+
+snippet NewViewOdooV14 "Odoo V14 new view"
+//https://www.odoo.com/documentation/14.0/developer/reference/javascript/javascript_cheatsheet.html
+odoo.define('stock_reservation_overview.view', function(require){
+
+var AbstractController = require('web.AbstractController');
+var AbstractModel = require('web.AbstractModel');
+var AbstractRenderer = require('web.AbstractRenderer');
+var AbstractView = require('web.AbstractView');
+var rpc = require('web.rpc');
+
+const ControlPanel = require('web.ControlPanel');
+const SearchPanel = require("web/static/src/js/views/search_panel.js");
+var Controller = AbstractController.extend({
+    _onSearch(searchQuery) {
+        this.reload(_.extend({ offset: 0, groupsOffset: 0 }, searchQuery));
+    },
+});
+
+var Widget1 = require('web.Widget').extend({
+        renderElement() {
+            this._super.apply(this, arguments);
+            this.$el.html("HALLO2");
+        },
+});
+var Renderer = AbstractRenderer.extend({
+    async _render() {
+        this.$el.html("HALLO");
+
+        var elements = this.getParent().model.root_elements;
+        var self = this;
+        _.each(elements, function (element) {
+            const w = new Widget1(self);
+            w.appendTo(self.$el);
+        });
+    }
+
+});
+var Model = AbstractModel.extend({
+    init: function () {
+        this._super.apply(this, arguments);
+    },
+    async __load(params) {
+        await this._super(...arguments);
+        this.modelName = params.modelName;
+        await this.load_stock_moves(params.domain);
+
+    },
+    async load_stock_moves(domain) {
+        var result = await rpc.query({
+            model: 'stock.move',
+            method: 'web_generic',
+            kwargs: {
+                modelname: this.modelName,
+                domain: domain,
+                flat: false,  //this.flat,
+            },
+        });
+        this.root_elements = result;
+    },
+});
+
+
+var View = AbstractView.extend({
+    config: {
+        Model: Model,
+        Controller: Controller,
+        Renderer: Renderer,
+        ControlPanel: ControlPanel,
+        SearchPanel: SearchPanel,
+    },
+});
+
+var viewRegistry = require('web.view_registry');
+viewRegistry.add('stock_reservation_overview', View);
+return View;
+
+});
+endsnippet
