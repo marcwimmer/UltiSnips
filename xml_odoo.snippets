@@ -73,7 +73,7 @@ endsnippet
 
 
 snippet form_new "new form"
-<record id="view_${1/\./_/g}_form" model="ir.ui.view">
+<record id="${1/\./_/g}_form" model="ir.ui.view">
 	<field name="name">$1 form</field>
 	<field name="model">${1:model}</field>
 	<field name="arch" type="xml">
@@ -189,7 +189,7 @@ fonts="bold:...
 endsnippet
 
 snippet tree-new
-<record id="view_${1/\./_/g}_tree" model="ir.ui.view">
+<record id="${1/\./_/g}_tree" model="ir.ui.view">
 	<field name="model">${1:model}</field>
 	<field name="arch" type="xml">
 		<tree default_order="" string="${3:title}" ${4:decoration-danger="state!='done' and date_set&lt;=current_date"}>
