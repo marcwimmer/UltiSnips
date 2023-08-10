@@ -1,0 +1,68 @@
+snippet githubflow
+# .github/workflows/flow1.yml
+name: Deploy fixes to other versions
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  pull-requests: write
+  contents: write
+  packages: write
+
+
+jobs:
+  merge_on_others:
+    runs-on: ubuntu-latest
+    name: merge last change on other branches
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Run image
+      uses: CfirTsabari/actions-pipx@v1
+
+    - name: prepare ssh folder
+      run: |
+        mkdir ~/.ssh
+        chmod a-rwx ~/.ssh
+        chmod u+rwx ~/.ssh
+        ls -lhtra ~
+        echo "${{ secrets.SSHKEY }}" > ~/.ssh/id_rsa
+        chmod 400 ~/.ssh/id_rsa
+        ls -lhtra ~/.ssh
+        
+    - name: checkout main branch
+      run: |
+        set -x
+        git config user.email 'github-action'
+        git config user.name 'github-action'
+        git checkout main
+        cat ~/.ssh/id_rsa
+        git remote set-url origin git@github.com:$GITHUB_REPOSITORY
+        git checkout main
+        git fetch
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: Odoo-Ninjas/zebroo-sync-dev
+
+    - name: deploy to branches
+      run: |
+        for branch in $DEPLOY_BRANCHES; do
+          git checkout $branch -f
+          pipx run gimera apply -u -I
+          if [[ -n $(git status -s) ]]; then
+            git commit -m "github action updated version"
+            git push
+          fi
+        done
+      env:
+        DEPLOY_BRANCHES: "11.0 13.0 14.0 15.0 16.0"
+
+endsnippet
