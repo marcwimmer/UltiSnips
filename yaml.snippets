@@ -479,6 +479,12 @@ endsnippet
 snippet homedirectory
 homedir=$( getent passwd "{{ username }}" | cut -d: -f6 )
 endsnippet
+snippets github_action_private_key
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+endsnippet
+
 snippet githubflow_mini_flow
 # .github/workflows/flow1.yml
 name: Test and Upload Pypi
@@ -545,7 +551,7 @@ jobs:
           git commit -am "$COMMIT_MSG"
           VERSION=$(cat wodoo/version.txt)
           git tag ${VERSION}
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$$GITHUB_REPOSITORY
           git push origin --tags
           git push
           python3 setup.py sdist
