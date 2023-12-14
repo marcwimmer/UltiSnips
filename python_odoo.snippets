@@ -245,24 +245,13 @@ snippet open_window "Open Window with options as comments"
 return {
 	'view_type': 'form',
 	'res_model': self._name,
-	#'res_id': ,
-	#'domain': [],
-	#'views': [(obj.get_formview_id(), 'form'), (False, 'tree')],
-	#'views': [(False, 'tree'), (False, 'form')],
+	'res_id': ,
+	'domain': [],
+	'views': [(obj.get_formview_id(), 'form'), (False, 'tree')],
+	'views': [(False, 'tree'), (False, 'form')],
 	'type': 'ir.actions.act_window',
-	'flags': {'form': {
-		'action_buttons': True,  // to work in odoo 11 insert empty <footer /> in form (tested 18.05.2018)
-		#'initial_mode': 'edit'/'view'
-		#'footer_to_buttons': False,
-		#'not_interactiable_on_create': False,
-		#'disable_autofocus': False,
-		#'headless': False,  9.0 and others?
-	}},
-	'options': {
-		# needs module web_extended_actions
-		'hide_breadcrumb': True,
-		'replace_breadcrumb': True,
-		'clear_breadcrumbs': True,
+	"context": {
+		"form_view_initial_mode": "edit",
 	},
 	'target': '${7:current}',
 }
@@ -1520,4 +1509,15 @@ endsnippet
 
 snippet jsontools
 from odoo.addons.module_tools.jsontools import json_encode
-endsnippet 
+endsnippet
+
+snippet display_notification
+	return {
+		'type': 'ir.actions.client',
+		'tag': 'display_notification',
+		'params': {
+			'message': message,
+			'type': 'success',
+			'sticky': False,
+		}
+endsnippet
