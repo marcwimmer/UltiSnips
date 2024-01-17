@@ -193,7 +193,7 @@ snippet tree-new
 	<field name="model">${1:model}</field>
 	<field name="arch" type="xml">
 		<tree default_order="" string="${3:title}" ${4:decoration-danger="state!='done' and date_set&lt;=current_date"}>
-			<field name="name" optional="show hide"/>
+			<field name="name" />
             ${0}
 		</tree>
 	</field>
@@ -618,6 +618,17 @@ endsnippet
 snippet function
 <function model="${1:model}" name="${2:funcname}">
 	<value>param1</value>
+</function>
+
+<function name="write" model="ir.model.data">
+    <function name="search" model="ir.model.data">
+        <value eval="[('module', '=', 'hr_timesheet'), ('name','=','timesheet_action_all')]"/>
+    </function>
+    <value eval="{'noupdate': False}"/>
+</function>
+<function model="ir.rule" name="write">
+    <value eval="[ref('approvals.approval_request_request_owner_rule')]"/>
+    <value eval="{'perm_write': 0, 'perm_create': 0, 'perm_unlink': 0}"/>
 </function>
 $0
 endsnippet
