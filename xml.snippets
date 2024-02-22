@@ -323,13 +323,13 @@ snippet act_server-action-with-menuitem
 endsnippet
 
 snippet act-window-action-called-by-menu-item
-<record id='${1:id_of_menu}_action' model='ir.actions.act_window'>
+<record id='${1/\./_/g}_action' model='ir.actions.act_window'>
     <field name='name'>${2:name}</field>
     <field name='res_model'>${3:model}</field>
     <field name='view_mode'>${4:tree,form}</field>
     <field name="help"><![CDATA[<p> Nothing found!</p>]]></field>
 </record>
-<menuitem parent="${5:parent_xml_id}" id="menu_$1" action="$1_action"/>
+<menuitem parent="${5:parent_xml_id}" id="menu_${1/\./_/g}" action="${1/\./_/g}_action"/>
 endsnippet
 
 snippet act-server-action-on-more-button
