@@ -1,6 +1,6 @@
 extends python
 
-snippet unittest "V11"
+snippet unittest
 import arrow
 import os
 import pprint
@@ -15,10 +15,12 @@ from odoo.tests.common import TransactionCase, Form
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo.exceptions import UserError, RedirectWarning, ValidationError, AccessError
+from odoo.tests import tagged
 
 # self.env["stock.quant"]._update_available_quantity(product, self.loc_stock, qty)
 
 
+@tagged('post_install', '-at_install')
 class $1(TransactionCase):
 
 	def setUp(self):
