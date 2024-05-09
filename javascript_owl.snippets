@@ -1,0 +1,20 @@
+snippet owl_minimum
+/** @odoo-module **/
+
+
+import { standardFieldProps} from '@web/views/fields/standard_field_props';
+import { registry } from "@web/core/registry";
+import { Component, useState } from "@odoo/owl";
+
+export class $1 extends Component {
+
+}
+$1.supportedTypes = ['text'];
+$1.template = 'zbsync.pipeline_renderer';
+$1.props = {
+    ...standardFieldProps
+};
+
+registry.category("fields").add("pipeline_renderer", $1);
+
+endsnippet
