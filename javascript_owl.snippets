@@ -7,7 +7,12 @@ import { registry } from "@web/core/registry";
 import { Component, useState } from "@odoo/owl";
 
 export class $1 extends Component {
-
+	static template = xml`<span>New Component</span>`;
+	static props = [];
+	setup() {
+		this.props = useState(this.props);
+		this.state = useState({});
+	}
 }
 $1.supportedTypes = ['text'];
 $1.template = 'zbsync.pipeline_renderer';
