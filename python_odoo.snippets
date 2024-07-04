@@ -1523,3 +1523,9 @@ snippet display_notification
 			'sticky': False,
 		}
 endsnippet
+
+
+snippet cprofile
+import cProfile
+cProfile.run("""env['stock.move']._compute_forecast()")
+endsnippet

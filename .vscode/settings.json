@@ -1,4 +1,5 @@
 {
-	"workbench.colorCustomizations": {},
-	"GitHooks.hooksDirectory": "/Users/marcwimmer/projects/UltiSnips/.git/hooks"
+	"GitHooks.hooksDirectory": "/Users/marcwimmer/projects/UltiSnips/.git/hooks",
+	"window.title": "${rootName}@${remoteName}${separator}[Branch: main]",
+	"workbench.colorCustomizations": {}
 }
